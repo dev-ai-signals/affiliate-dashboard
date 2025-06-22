@@ -10,7 +10,7 @@
 
         <div class="card-two">
           <div class="card-two-left">
-            <h2>$0</h2>
+            <h2>${{ balance.toFixed(2) }}</h2>
             <span>Balance</span>
           </div>
           <div class="card-two-right">
