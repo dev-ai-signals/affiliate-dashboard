@@ -134,7 +134,7 @@ import VueSignature from 'vue3-signature'
 
 const router = useRouter()
 const agreeToTerms = ref(false)
-const signaturePad = ref(null)
+const signaturePad = ref<any>(null)
 const hasSignature = ref(false)
 
 function updateHasSignature() {
