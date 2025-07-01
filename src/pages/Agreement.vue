@@ -1,7 +1,9 @@
 <template>
   <section class="agreement">
     <div class="agreement__banner">
-      <h1 class="agreement__title">Affiliate Agreement</h1>
+      <div class="agreement__glass">
+        <h1 class="agreement__title">Affiliate Agreement</h1>
+      </div>
     </div>
 
     <div class="agreement__content">
@@ -87,82 +89,67 @@
 
       <span class="break-line-two"></span>
 
-      <form class="acceptance-form">
-        <div class="form-wrapper">
-          <div class="form-row">
-            <label>Affiliate Signature:</label>
-            <div class="custom-upload">
-              <input type="file" id="signatureFile1" />
-              <label for="signatureFile1">
-                <img src="@/assets/icons/upload-file.svg" alt="Upload Icon" />
-              </label>
-            </div>
-          </div>
+      <p class="last-p">To continue, please draw your signature below, check the box, and accept our terms.</p>
 
-          <div class="form-row">
-            <label>Full Legal Name:</label>
-            <input type="text" placeholder="eg. Roman" />
+      <div class="acceptance-form">
+        <div class="signature-box">
+          <div class="canvas-wrapper">
+            <vue-signature
+              ref="signaturePad"
+              :width="370"
+              :height="131"
+              class="signature-canvas"
+              @end="updateHasSignature"
+            />
           </div>
-
-          <div class="form-row">
-            <label>Email Address:</label>
-            <input type="email" placeholder="eg. example@gmail.com" />
-          </div>
-
-          <div class="form-row">
-            <label>Date:</label>
-            <input type="text" placeholder="eg. 02/04/2021" />
-          </div>
-
-          <div class="form-row">
-            <label>Company Representative:</label>
-            <input type="text" placeholder="eg. Roman" />
-          </div>
-
-          <div class="form-row">
-            <label>Signature:</label>
-            <div class="custom-upload">
-              <input type="file" id="signatureFile2" />
-              <label for="signatureFile2">
-                <img src="@/assets/icons/upload-file.svg" alt="Upload Icon" />
-              </label>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <label>Date:</label>
-            <input type="text" placeholder="eg. 02/04/2021" />
-          </div>
+          <div class="clear-btn" @click="clearSignature">Clear</div>
         </div>
 
-        <span class="break-line-form"></span>
-        <p>By signing below, the Affiliate acknowledges having read, understood, and agreed to the terms set forth in this Agreement.</p>
-
-        <div class="form-checkbox">
+        <div class="acceptance-row">
           <div class="checkbox-container">
-            <input type="checkbox" id="agreement" />
-            <label for="agreement">I agree to the AI Signals Affiliate Agreement</label>
+            <input type="checkbox" v-model="agreeToTerms" />
+            <label>I agree to the AI Signals Affiliate Agreement</label>
           </div>
 
-          <button type="button" class="accept-btn" @click="handleAccept">
+          <button
+            class="accept-btn"
+            type="button"
+            :disabled="!agreeToTerms || !hasSignature"
+            @click="handleAccept"
+          >
             <img :src="check" alt="Check Button" />
             ACCEPT
           </button>
         </div>
-      </form>
-
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import check from '@/assets/icons/check-btn.svg'
 import { useRouter } from 'vue-router'
+import VueSignature from 'vue3-signature'
 
 const router = useRouter()
+const agreeToTerms = ref(false)
+const signaturePad = ref(null)
+const hasSignature = ref(false)
+
+function updateHasSignature() {
+  hasSignature.value = signaturePad.value?.isEmpty() === false
+}
+
+function clearSignature() {
+  signaturePad.value?.clear()
+  updateHasSignature()
+}
 
 function handleAccept() {
-  router.push('/dashboard')
+  if (agreeToTerms.value && !signaturePad.value.isEmpty()) {
+    router.push('/dashboard')
+  }
 }
 </script>
 
@@ -175,9 +162,7 @@ function handleAccept() {
 
   &__banner {
     height: 142px;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-      url('@/assets/images/affiliate-banner.webp');
+    background: url('@/assets/images/affiliate-banner.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -186,8 +171,23 @@ function handleAccept() {
     justify-content: center;
   }
 
+  &__glass {
+    display: flex;
+    background-color: #065b23;
+    width: 1380px;
+    height: 80px;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 10px;
+    gap: 10px;
+  }
+
   &__title {
-    font-size: 1.8rem;
+    font-size: 36px;
     color: #fff;
     font-weight: 600;
   }
@@ -206,7 +206,7 @@ function handleAccept() {
       font-weight: 400;
       font-size: 16px;
       line-height: 22px;
-      color: rgba(0, 0, 0, 1);
+      color: rgba(93, 90, 90, 1);
       margin-bottom: 60px;
     }
 
@@ -221,7 +221,7 @@ function handleAccept() {
       font-weight: 400;
       font-size: 16px;
       line-height: 22px;
-      color: rgba(0, 0, 0, 1);
+      color: rgba(93, 90, 90, 1);
     }
 
     .break-line {
@@ -246,7 +246,7 @@ function handleAccept() {
       font-weight: 400;
       font-size: 16px;
       line-height: 22px;
-      color: rgba(0, 0, 0, 1);
+      color: rgba(93, 90, 90, 1);
       margin-bottom: 20px;
     }
 
@@ -254,7 +254,7 @@ function handleAccept() {
       font-weight: 400;
       font-size: 16px;
       line-height: 22px;
-      color: rgba(0, 0, 0, 1);
+      color: rgba(93, 90, 90, 1);
       margin-bottom: 20px;
     }
 
@@ -262,7 +262,7 @@ function handleAccept() {
       font-weight: 400;
       font-size: 16px;
       line-height: 22px;
-      color: rgba(0, 0, 0, 1);
+      color: rgba(93, 90, 90, 1);
       margin: 20px 0;
     }
 
@@ -270,13 +270,22 @@ function handleAccept() {
       font-weight: 400;
       font-size: 16px;
       line-height: 22px;
-      color: rgba(0, 0, 0, 1);
+      color: rgba(93, 90, 90, 1);
       margin-top: 20px;
     }
 
     ul {
       padding-left: 30px;
       list-style: disc;
+      color: rgba(93, 90, 90, 1);
+    }
+
+    .last-p {
+      color: rgba(0, 0, 0, 1);
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      margin-bottom: 10px;
     }
 
     strong {
@@ -288,146 +297,89 @@ function handleAccept() {
       display: flex;
       flex-direction: column;
 
-      .form-wrapper {
-        margin-top: 40px;
-        width: 638px;
+      .signature-box {
+        position: relative;
+        width: 340px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
 
-        .form-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 25px;
+        .canvas-wrapper {
+          width: 340px;
+          height: 130px;
+          border: 1px solid rgba(196, 196, 196, 1);
+          position: relative;
 
-          input {
-            width: 384px;
-            height: 46px;
-            border-radius: 5px;
-            border: 1px solid rgba(196, 196, 196, 1);
-            padding: 0 10px;
-
-            &::placeholder {
-              color: rgba(0, 0, 0, 0.4);
-            }
+          .signature-canvas {
+            width: 100%;
+            height: 100%;
           }
+        }
 
-          label {
-            font-weight: 600;
-            white-space: nowrap;
-          }
+        .clear-btn {
+          font-size: 14px;
+          text-decoration: underline;
+          margin-top: 4px;
+          color: rgba(49, 118, 177, 1);
+          cursor: pointer;
+          width: fit-content;
 
-          .custom-upload {
-            position: relative;
-            width: 384px;
-            display: flex;
-            align-items: center;
-
-            input[type='file'] {
-              width: 384px;
-              border: 1px solid #ccc;
-              border-radius: 6px;
-              font-size: 16px;
-              appearance: none;
-              background-color: #fff;
-              color: transparent;
-              position: relative;
-              z-index: 1;
-            }
-
-            label {
-              position: absolute;
-              right: 4px;
-              top: 50%;
-              transform: translateY(-50%);
-              background-color: transparent;
-              padding: 0;
-              margin: 0;
-              cursor: pointer;
-              z-index: 2;
-
-              img {
-                width: 38px;
-                height: 38px;
-              }
-            }
-
-            input[type='file']::-webkit-file-upload-button {
-              visibility: hidden;
-            }
-            input[type='file']::file-selector-button {
-              visibility: hidden;
-            }
+          &:hover {
+            color: #e6991e;
           }
         }
       }
 
-      .break-line-form {
-        width: 100%;
-        border-top: 1px solid rgba(0, 0, 0, 1);
-        margin: 50px 0;
-      }
-
-      p {
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 22px;
-        color: rgba(0, 0, 0, 1);
-      }
-
-      .form-checkbox {
+      .acceptance-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 31px;
+        width: 100%;
+        margin-top: 20px;
 
         .checkbox-container {
           display: flex;
           align-items: center;
           gap: 10px;
-          width: 100%;
+
+          input[type='checkbox'] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+          }
+
+          label {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 20px;
+            color: rgba(0, 0, 0, 0.5);
+          }
         }
 
-        input[type='checkbox'] {
-          width: 20px;
-          height: 20px;
-        }
-
-        label {
-          font-weight: 400;
+        .accept-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          height: 46px;
+          width: 174px;
+          border-radius: 5px;
+          padding: 10px 20px;
+          border: none;
+          background-color: rgba(241, 162, 59, 1);
+          color: rgba(255, 255, 255, 1);
+          font-weight: 500;
           font-size: 16px;
-          line-height: 20px;
-          color: rgba(0, 0, 0, 0.5);
-        }
-      }
+          cursor: pointer;
+          transition: background 0.2s;
 
-      .accept-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
+          &:hover {
+            background-color: #e6991e;
+          }
 
-        height: 46px;
-        width: 174px;
-        border-radius: 5px;
-        padding: 10px 20px;
-        border: none;
-        background-color: rgba(241, 162, 59, 1);
-        color: rgba(255, 255, 255, 1);
-        font-weight: 500;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.2s;
-
-        img {
-          width: 16px;
-          height: auto;
-          margin-bottom: 2px;
-        }
-
-        &:hover {
-          background-color: #e6991e;
+          &:disabled {
+            background-color: rgba(193, 193, 193, 1);
+            cursor: not-allowed;
+          }
         }
       }
     }

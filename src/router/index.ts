@@ -8,6 +8,14 @@ const routes = [
     component: () => import('@/pages/Register.vue'),
   },
   {
+    path: '/login',
+    component: () => import('@/pages/Login.vue'),
+  },
+  {
+    path: '/forgot-password',
+    component: () => import('@/pages/ForgotPassword.vue'),
+  },
+  {
     path: '/agreement',
     component: () => import('@/pages/Agreement.vue'),
   },

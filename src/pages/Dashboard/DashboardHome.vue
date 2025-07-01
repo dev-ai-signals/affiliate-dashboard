@@ -1,7 +1,12 @@
 <template>
   <section class="dashboard">
-    <div class="dashboard__container">
+    <div class="dashboard__banner">
+      <div class="dashboard__glass">
+        <h1 class="dashboard__title">Affiliate Dashboard</h1>
+      </div>
+    </div>
 
+    <div class="dashboard__container">
       <div class="dashboard__cards">
         <div class="card-one">
           <h2>$50</h2>
@@ -75,7 +80,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
-const balance = ref(0)
+const balance = ref(50)
 const activeTab = ref<'tier2' | 'dashboard'>('tier2')
 
 const isPayoutAvailable = computed(() => balance.value > 0)
@@ -93,7 +98,38 @@ function copyText(text: string) {
   background-color: rgba(245, 245, 245, 1);
   color: #000;
   min-height: 100vh;
-  padding: 20px 22px;
+
+  &__banner {
+    height: 142px;
+    background: url('@/assets/images/dashboard-banner.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  &__glass {
+    width: 1380px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 10px;
+    padding: 10px 20px;
+    gap: 10px;
+  }
+
+  &__title {
+    font-size: 36px;
+    color: #fff;
+    font-weight: 600;
+  }
 
   &__container {
     width: 1392px;
@@ -189,12 +225,12 @@ function copyText(text: string) {
           cursor: not-allowed;
 
           &.active {
-            background-color: rgba(241, 162, 59, 1);
+            background-color: rgba(6, 116, 41, 1);
             cursor: pointer;
             transition: background 0.2s;
 
             &:hover {
-              background-color: #e6991e;
+              background: #065b23;
             }
           }
         }

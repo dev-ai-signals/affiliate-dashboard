@@ -1,36 +1,22 @@
 <template>
-  <section class="register">
-    <div class="register__banner">
-      <div class="register__glass">
-        <h1 class="register__title">AI Signals Affiliate Program</h1>
+  <section class="reset">
+    <div class="reset__banner">
+      <div class="reset__glass">
+        <h1 class="reset__title">Password Reset</h1>
       </div>
     </div>
-    <div class="register__container">
-      <div class="register__left">
-        <img :src="registerImage" alt="Keyboard illustration" />
+    <div class="reset__container">
+      <div class="reset__left">
+        <img :src="resetImage" alt="Reset illustration" />
       </div>
 
-      <div class="register__right">
+      <div class="reset__right">
         <img class="logo" :src="logo" alt="AI Signals Logo" />
 
-        <form class="register__form" @submit="handleSubmit">
-          <label>Email</label>
-          <input type="email" placeholder="eg. name@gmail.com" />
-
-          <label>Full Name</label>
-          <input type="text" placeholder="eg. full name" />
-
-          <label>Password</label>
-          <input type="password" placeholder="eg. xyz1234567" />
-
-          <label>Confirm Password</label>
-          <input type="password" placeholder="eg. xyz1234567" />
-
-          <button type="submit">GET STARTED</button>
-
-          <div class="switch-login">
-            Already have an account? <span @click="goToLogin">Login</span>
-          </div>
+        <form class="reset__form" @submit.prevent="handleSubmit">
+          <label>Registered Email</label>
+          <input type="email" placeholder="eg. name@aisignals.com" />
+          <button type="submit">RESET LINK</button>
         </form>
       </div>
     </div>
@@ -38,24 +24,19 @@
 </template>
 
 <script setup lang="ts">
-import registerImage from '@/assets/images/register-image.webp'
+import resetImage from '@/assets/images/reset-image.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-function handleSubmit(e: Event) {
-  e.preventDefault()
-  router.push('/agreement')
-}
-
-function goToLogin() {
-  router.push('/login')
+function handleSubmit() {
+  router.push('/login') // or show a success notification
 }
 </script>
 
 <style scoped lang="scss">
-.register {
+.reset {
   background-color: rgba(245, 245, 245, 1);
   color: #000;
   min-height: 100vh;
@@ -63,7 +44,7 @@ function goToLogin() {
 
   &__banner {
     height: 142px;
-    background: url('@/assets/images/register-banner.webp');
+    background: url('@/assets/images/reset-banner.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -166,25 +147,6 @@ function goToLogin() {
 
       &:hover {
         background-color: #e6991e;
-      }
-    }
-
-    .switch-login {
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.5);
-      text-align: left;
-      font-weight: 400;
-
-      span {
-        color: rgba(49, 118, 177, 1);
-        cursor: pointer;
-        font-weight: 500;
-        transition: color 0.2s;
-        text-decoration: underline;
-
-        &:hover {
-          color: #e6991e;
-        }
       }
     }
   }
