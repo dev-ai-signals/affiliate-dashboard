@@ -61,7 +61,6 @@ async function handleSubmit(e: Event) {
       email: email.value,
       password: password.value,
     })
-    console.log('Login success, saving user session:', data)
 
     userStore.login(data)
     router.push('/dashboard')

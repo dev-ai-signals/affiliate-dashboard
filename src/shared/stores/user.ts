@@ -14,7 +14,6 @@ export const useUserStore = defineStore('user', {
   }),
   actions: {
     login(payload: { token: string, userDto: any }) {
-      console.log('Saving to localStorage:', payload.token)
       this.token = payload.token
       this.email = payload.userDto.email
       this.userDto = payload.userDto
