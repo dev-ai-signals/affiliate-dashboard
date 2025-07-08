@@ -9,7 +9,7 @@
     <div class="dashboard__container">
       <div class="dashboard__cards">
         <div class="card-one">
-          <h2>$50</h2>
+          <h2>${{ totalEarned.toFixed(2) }}</h2>
           <span>Total Earned</span>
         </div>
 
@@ -28,7 +28,7 @@
             </button>
             <div class="spanned-text">
               <span>SIGNED UP</span>
-              <span class="darken">00</span>
+              <span class="darken">{{ signedUp }}</span>
             </div>
           </div>
         </div>
@@ -78,15 +78,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import api from '@/shared/api/axios'
 
-const balance = ref(50)
+const totalEarned = ref(0)
+const balance = ref(0)
+const signedUp = ref(0)
+const affiliateLink = ref('')
+const tier2Link = ref('')
+const tier2Info = ref<any>(null)
 const activeTab = ref<'tier2' | 'dashboard'>('tier2')
 
 const isPayoutAvailable = computed(() => balance.value > 0)
 
-const tier2Link = 'https://www.tradingview.com/pricing/?share_your_love=romangolovyou'
-const affiliateLink = 'https://www.tradingview.com/pricing/?share_your_love=romangolovyou'
+onMounted(async () => {
+  try {
+    const { data } = await api.get('/affiliate/dashboard')
+    totalEarned.value = data.totalEarned
+    balance.value = data.balance
+    signedUp.value = data.signedUp
+    affiliateLink.value = data.affiliateLink
+    tier2Link.value = data.tier2Link
+    tier2Info.value = data.tier2Info
+  } catch (e) {
+    // handle error
+  }
+})
 
 function copyText(text: string) {
   navigator.clipboard.writeText(text)

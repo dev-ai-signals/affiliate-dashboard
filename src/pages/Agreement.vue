@@ -114,7 +114,7 @@
           <button
             class="accept-btn"
             type="button"
-            :disabled="!agreeToTerms || !hasSignature"
+            :disabled="!agreeToTerms"
             @click="handleAccept"
           >
             <img :src="check" alt="Check Button" />
@@ -127,15 +127,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import check from '@/assets/icons/check-btn.svg'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import check from '@/assets/icons/check-btn.svg'
 import VueSignature from 'vue3-signature'
+import api from '@/shared/api/axios'
 
 const router = useRouter()
 const agreeToTerms = ref(false)
 const signaturePad = ref<any>(null)
 const hasSignature = ref(false)
+const pendingRegistration = ref<any>(null)
+
+onMounted(() => {
+  const data = localStorage.getItem('pendingRegistration')
+  if (data) {
+    pendingRegistration.value = JSON.parse(data)
+  } else {
+    router.push('/register')
+  }
+})
 
 function updateHasSignature() {
   hasSignature.value = signaturePad.value?.isEmpty() === false
@@ -146,9 +157,25 @@ function clearSignature() {
   updateHasSignature()
 }
 
-function handleAccept() {
-  if (agreeToTerms.value && !signaturePad.value.isEmpty()) {
+async function handleAccept() {
+  if (!agreeToTerms.value) return
+
+  try {
+    await api.post('/auth/register/affiliate', {
+      ...pendingRegistration.value,
+      agreedToTerms: true,
+      agreementSignature: "lolz"
+    })
+
+    localStorage.setItem('userSession', JSON.stringify({
+      email: pendingRegistration.value.email
+    }))
+
+    localStorage.removeItem('pendingRegistration')
     router.push('/dashboard')
+  } catch (err) {
+    console.error(err)
+    alert('Registration failed. Please try again.')
   }
 }
 </script>

@@ -15,16 +15,16 @@
 
         <form class="register__form" @submit="handleSubmit">
           <label>Email</label>
-          <input type="email" placeholder="eg. name@gmail.com" />
+          <input v-model="email" @input="sync('email', $event)" type="email" placeholder="eg. name@gmail.com" />
 
           <label>Full Name</label>
-          <input type="text" placeholder="eg. full name" />
+          <input v-model="fullName" @input="sync('fullName', $event)" type="text" placeholder="eg. full name" />
 
           <label>Password</label>
-          <input type="password" placeholder="eg. xyz1234567" />
+          <input v-model="password" @input="sync('password', $event)" type="password" placeholder="eg. xyz1234567" />
 
           <label>Confirm Password</label>
-          <input type="password" placeholder="eg. xyz1234567" />
+          <input v-model="confirmPassword" @input="sync('confirmPassword', $event)" type="password" placeholder="eg. xyz1234567" />
 
           <button type="submit">GET STARTED</button>
 
@@ -41,12 +41,46 @@
 import registerImage from '@/assets/images/register-image.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 const router = useRouter()
 
-function handleSubmit(e: Event) {
+const email = ref('')
+const fullName = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+
+async function handleSubmit(e: Event) {
   e.preventDefault()
+
+  if (!email.value || !fullName.value || !password.value || !confirmPassword.value) {
+    alert('Please fill out all fields.')
+    return
+  }
+
+  if (password.value !== confirmPassword.value) {
+    alert('Passwords do not match.')
+    return
+  }
+
+  localStorage.setItem('pendingRegistration', JSON.stringify({
+    email: email.value,
+    fullName: fullName.value,
+    password: password.value,
+    confirmPassword: confirmPassword.value
+  }))
+
   router.push('/agreement')
+}
+
+
+
+function sync(field: string, e: Event) {
+  const value = (e.target as HTMLInputElement).value
+  if (field === 'email') email.value = value
+  if (field === 'fullName') fullName.value = value
+  if (field === 'password') password.value = value
+  if (field === 'confirmPassword') confirmPassword.value = value
 }
 
 function goToLogin() {

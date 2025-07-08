@@ -15,12 +15,12 @@
 
         <form class="login__form" @submit.prevent="handleSubmit">
           <label>Email</label>
-          <input type="email" placeholder="eg. name@gmail.com" />
+          <input v-model="email" type="email" placeholder="eg. name@gmail.com" />
 
           <label>Password</label>
-          <input type="password" placeholder="eg. xyz1234567" />
+          <input v-model="password" type="password" placeholder="eg. xyz1234567" />
 
-          <button type="submit">LOGIN</button>
+          <button type="submit" :disabled="loading">LOGIN</button>
 
           <div class="login__extras">
             <span class="forgot" @click="goToForgot">Forgot password</span>
@@ -36,12 +36,43 @@
 import loginImage from '@/assets/images/login-image.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import api from '@/shared/api/axios'
+import { useUserStore } from '@/shared/stores/user'
 
+const userStore = useUserStore()
 const router = useRouter()
 
-function handleSubmit() {
-  router.push('/dashboard') // or wherever you want after login
+const email = ref('')
+const password = ref('')
+const loading = ref(false)
+
+async function handleSubmit(e: Event) {
+  e.preventDefault()
+
+  if (!email.value || !password.value) {
+    alert('Please enter both email and password.')
+    return
+  }
+
+  loading.value = true
+  try {
+    const { data } = await api.post('/auth/login', {
+      email: email.value,
+      password: password.value,
+    })
+    console.log('Login success, saving user session:', data)
+
+    userStore.login(data)
+    router.push('/dashboard')
+  } catch (err: any) {
+    console.error('Login failed:', err)
+    alert('Login failed. Please check your credentials.')
+  } finally {
+    loading.value = false
+  }
 }
+
 
 function goToForgot() {
   router.push('/forgot-password')
@@ -50,6 +81,7 @@ function goToForgot() {
 function goToRegister() {
   router.push('/register')
 }
+
 </script>
 
 <style scoped lang="scss">
