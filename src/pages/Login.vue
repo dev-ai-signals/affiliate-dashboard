@@ -16,7 +16,7 @@
         <form class="login__form" @submit.prevent="handleSubmit">
           <label>Email</label>
           <input v-model="email" type="email" placeholder="eg. name@gmail.com" />
-          <label>1234</label>
+
           <label>Password</label>
           <input v-model="password" type="password" placeholder="eg. xyz1234567" />
 

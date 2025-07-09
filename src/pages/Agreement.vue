@@ -167,12 +167,8 @@ async function handleAccept() {
       agreementSignature: "lolz"
     })
 
-    localStorage.setItem('userSession', JSON.stringify({
-      email: pendingRegistration.value.email
-    }))
-
     localStorage.removeItem('pendingRegistration')
-    router.push('/dashboard')
+    router.push('/login')
   } catch (err) {
     console.error(err)
     alert('Registration failed. Please try again.')

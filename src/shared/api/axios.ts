@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getUserToken } from '@/shared/stores/user'
+import { useUserStore } from '@/shared/stores/user'
 
 const api = axios.create({
   baseURL: '/api',
@@ -8,11 +8,14 @@ const api = axios.create({
 
 api.interceptors.request.use(
   config => {
-    const token = getUserToken()
+    const userStore = useUserStore()
+    const token = userStore.token
+
     if (token) {
       config.headers = config.headers || {}
       config.headers['Authorization'] = `Bearer ${token}`
     }
+
     return config
   },
   error => Promise.reject(error)
