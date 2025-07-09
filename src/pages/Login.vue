@@ -17,8 +17,6 @@
           <label>Email</label>
           <input v-model="email" type="email" placeholder="eg. name@gmail.com" />
 
-          <label>123</label>
-
           <label>Password</label>
           <input v-model="password" type="password" placeholder="eg. xyz1234567" />
 
