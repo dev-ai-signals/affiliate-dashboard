@@ -7,11 +7,15 @@
     </div>
     <div class="register__container">
       <div class="register__left">
-        <img :src="registerImage" alt="Keyboard illustration" />
+        <img v-if="!isMobile" :src="registerImage" alt="Keyboard illustration" />
+        <div v-else class="mobile-top-content">
+          <img class="logo" :src="logo" alt="AI Signals Logo" />
+          <img :src="mobileRegisterImage" alt="Mobile Content Image">
+        </div>
       </div>
 
       <div class="register__right">
-        <img class="logo" :src="logo" alt="AI Signals Logo" />
+        <img v-if="!isMobile" class="logo" :src="logo" alt="AI Signals Logo" />
 
         <form class="register__form" @submit="handleSubmit">
           <label>Email</label>
@@ -20,7 +24,7 @@
           <label>Full Name</label>
           <input v-model="fullName" @input="sync('fullName', $event)" type="text" placeholder="eg. full name" />
 
-          <label>Password</label>
+          <label>Create Password</label>
           <input v-model="password" @input="sync('password', $event)" type="password" placeholder="eg. xyz1234567" />
 
           <label>Confirm Password</label>
@@ -39,9 +43,12 @@
 
 <script setup lang="ts">
 import registerImage from '@/assets/images/register-image.webp'
+import mobileRegisterImage from '@/assets/images/mobile-register-content.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const isMobile = ref(window.innerWidth <= 768)
 
 const router = useRouter()
 
@@ -73,7 +80,9 @@ async function handleSubmit(e: Event) {
   router.push('/agreement')
 }
 
-
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 768
+}
 
 function sync(field: string, e: Event) {
   const value = (e.target as HTMLInputElement).value
@@ -86,6 +95,13 @@ function sync(field: string, e: Event) {
 function goToLogin() {
   router.push('/login')
 }
+
+onMounted(() => {
+  window.addEventListener('resize', checkMobile)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
 </script>
 
 <style scoped lang="scss">
@@ -96,7 +112,7 @@ function goToLogin() {
   padding-bottom: 10px;
 
   &__banner {
-    height: 142px;
+    height: 100px;
     background: url('@/assets/images/register-banner.webp');
     background-size: cover;
     background-position: center;
@@ -104,6 +120,10 @@ function goToLogin() {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 768px) {
+      background: url('@/assets/images/mobile-register-bg.webp');
+    }
   }
 
   &__glass {
@@ -131,18 +151,29 @@ function goToLogin() {
     margin: 0 auto;
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 66px;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 10px;
-    height: 758px;
-    padding: 45px 155px 90px 155px;
+    height: auto;
+    padding: 90px 0;
   }
 
   &__left {
     img {
       border-radius: 10px;
-      max-width: 521px;
+      max-width: 392px;
       height: auto;
-      margin-right: 88px;
+    }
+
+    .mobile-top-content {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+
+      .logo {
+        width: 48px;
+      }
     }
   }
 
@@ -150,11 +181,11 @@ function goToLogin() {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    gap: 6px;
+    width: 354px;
+    gap: 9px;
 
     .logo {
-      width: 66px;
+      width: 50px;
       height: auto;
     }
   }
@@ -163,38 +194,40 @@ function goToLogin() {
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 12px;
+    gap: 9px;
 
     label {
       font-weight: 500;
+      font-size: 12px;
       color: rgba(0, 0, 0, 1);
     }
 
     input {
-      padding: 14px 8px;
-      border-radius: 5px;
+      padding: 11px 6px;
+      border-radius: 4px;
+      height: 39px;
       border: 1px solid rgba(0, 0, 0, 0.26);
       background: transparent;
       color: #000;
       font-weight: 400;
-      font-size: 16px;
+      font-size: 12px;
 
       &::placeholder {
         color: rgba(0, 0, 0, 0.5);
-        font-size: 16px;
+        font-size: 12px;
         font-weight: 400;
       }
     }
 
     button {
       background-color: rgba(241, 162, 59, 1);
-      height: 46px;
+      height: 35px;
       border: none;
       border-radius: 5px;
       color: rgba(255, 255, 255, 1);
       padding: 10px 20px;
       font-weight: 500;
-      font-size: 16px;
+      font-size: 12px;
       cursor: pointer;
       transition: background 0.2s;
 
@@ -204,7 +237,7 @@ function goToLogin() {
     }
 
     .switch-login {
-      font-size: 16px;
+      font-size: 12px;
       color: rgba(0, 0, 0, 0.5);
       text-align: left;
       font-weight: 400;
@@ -223,4 +256,60 @@ function goToLogin() {
     }
   }
 }
+
+@media (max-width: 768px) {
+  .register__glass {
+    width: 90%;
+    height: auto;
+    padding: 8px 14px;
+    .register__title {
+      font-size: 22px;
+    }
+  }
+
+  .register__container {
+    width: 90%;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 20px 60px 20px;
+  }
+
+  .register__left img {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .register__right {
+    width: 100%;
+    .logo {
+      width: 40px;
+    }
+  }
+
+  .register__form {
+    gap: 8px;
+
+    input {
+      height: 42px;
+      font-size: 14px;
+
+      &::placeholder {
+        font-size: 13px;
+      }
+    }
+
+    button {
+      height: 42px;
+      font-size: 14px;
+    }
+
+    .switch-login {
+      font-size: 13px;
+      text-align: center;
+    }
+  }
+}
+
 </style>

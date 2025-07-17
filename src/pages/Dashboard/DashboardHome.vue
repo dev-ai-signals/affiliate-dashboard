@@ -2,7 +2,7 @@
   <section class="dashboard">
     <div class="dashboard__banner">
       <div class="dashboard__glass">
-        <h1 class="dashboard__title">Affiliate Dashboard</h1>
+        <h1 class="dashboard__title">Dashboard</h1>
       </div>
     </div>
 
@@ -10,22 +10,16 @@
       <div class="dashboard__cards">
         <div class="card-one">
           <h2>${{ totalEarned.toFixed(2) }}</h2>
-          <span>Total Earned</span>
+          <span>Total Sales</span>
         </div>
 
         <div class="card-two">
           <div class="card-two-left">
             <h2>${{ balance.toFixed(2) }}</h2>
-            <span>Balance</span>
+            <span>Current Sales</span>
           </div>
           <div class="card-two-right">
-            <button
-              class="payout-btn"
-              :class="{ active: isPayoutAvailable }"
-              :disabled="!isPayoutAvailable"
-            >
-              Request Payout
-            </button>
+            <div></div>
             <div class="spanned-text">
               <span>SIGNED UP</span>
               <span class="darken">{{ signedUp }}</span>
@@ -37,40 +31,92 @@
       <div class="dashboard__tabs">
         <button
           class="tab"
-          :class="{ active: activeTab === 'tier2' }"
-          @click="activeTab = 'tier2'"
+          :class="{ active: activeTab === 'links' }"
+          @click="activeTab = 'links'"
         >
-          Tier 2 Links
+          Links
         </button>
         <button
           class="tab"
-          :class="{ active: activeTab === 'dashboard' }"
-          @click="activeTab = 'dashboard'"
+          :class="{ active: activeTab === 'settings' }"
+          @click="activeTab = 'settings'"
         >
-          Dashboard
+          Settings
         </button>
       </div>
 
-      <div v-if="activeTab === 'tier2'" class="dashboard__links">
+      <div v-if="activeTab === 'links'" class="dashboard__links">
         <div class="link-group">
-          <label><strong>Tier 2 Link</strong></label>
+          <label><strong>Customer Link</strong></label>
           <div class="input-wrap" @click="copyText(tier2Link)">
             <span class="fake-input">{{ tier2Link }}</span>
-            <img src="@/assets/icons/copy.svg" alt="Copy Icon" />
+            <img src="@/assets/icons/copy.svg" alt="Copy Icon" :class="{ blink: copiedLink === tier2Link }" />
           </div>
         </div>
 
         <div class="link-group">
-          <label><strong>Affiliate Link</strong></label>
+          <label><strong>Recruit Link</strong></label>
           <div class="input-wrap" @click="copyText(affiliateLink)">
             <span class="fake-input">{{ affiliateLink }}</span>
-            <img src="@/assets/icons/copy.svg" alt="Copy Icon" />
+            <img src="@/assets/icons/copy.svg" alt="Copy Icon" :class="{ blink: copiedLink === affiliateLink }" />
           </div>
         </div>
       </div>
 
-      <div v-else-if="activeTab === 'dashboard'" class="dashboard__placeholder">
-        <p>Dashboard content here...</p>
+      <div v-else-if="activeTab === 'settings'" class="dashboard__settings">
+        <div class="settings__left">
+          <div class="form-group">
+            <label>Previous Password</label>
+            <input type="password" placeholder="eg. Xyz1234" v-model="previousPassword" @input="passwordError = ''" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" placeholder="eg. Xyz1234" v-model="newPassword" @input="passwordError = ''" />
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" placeholder="eg. Xyz1234" v-model="confirmPassword" @input="passwordError = ''" />
+            <p v-if="passwordError" class="input-error">{{ passwordError }}</p>
+          </div>
+          <div class="submit-btn-container">
+            <span class="forgot" @click="goToForgot">Forgot password</span>
+            <button class="submit-btn green" @click="handleChangePassword">Change Password</button>
+
+            <div v-if="isMobile && successMessage === 'Password Changed'" class="success-notification">
+              <img src="@/assets/icons/check-green.svg" alt="Success Icon">
+              {{ successMessage }}
+            </div>
+          </div>
+        </div>
+
+        <div class="settings__right">
+          <div class="form-group-wallet">
+            <p>Enter your wallet address below to receive instant payouts from your personal and team sales.</p>
+            <p>Please note: payouts are currently supported <strong>only via USDC on the ERC-20 network</strong>.</p>
+            <label>Wallet Address</label>
+            <input type="text" placeholder="eg. 0x742d35Cc...f44e" />
+          </div>
+          <button class="submit-btn green" @click="handleSubmitWallet">Submit Wallet</button>
+
+          <div v-if="isMobile && successMessage === 'Wallet Submitted'" class="success-notification">
+            <img src="@/assets/icons/check-green.svg" alt="Success Icon">
+            {{ successMessage }}
+          </div>
+        </div>
+      </div>
+
+      <div class="in-betweeen"></div>
+
+      <div class="sign-out-container">
+        <div v-if="!isMobile && successMessage" class="success-notification">
+          <img src="@/assets/icons/check-green.svg" alt="Success Icon">
+          {{ successMessage }}
+        </div>
+
+        <button class="signout-btn" @click="signOut">
+          <img src="@/assets/icons/sign-out.svg" alt="Sign Out Icon">
+          Sign Out
+        </button>
       </div>
 
     </div>
@@ -78,18 +124,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from '@/shared/api/axios'
+import { useRouter } from 'vue-router'
 
+const isMobile = ref(window.innerWidth <= 768)
+
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth <= 768
+})
+
+const router = useRouter()
 const totalEarned = ref(0)
 const balance = ref(0)
 const signedUp = ref(0)
 const affiliateLink = ref('')
 const tier2Link = ref('')
 const tier2Info = ref<any>(null)
-const activeTab = ref<'tier2' | 'dashboard'>('tier2')
+const activeTab = ref<'links' | 'settings'>('links')
+const previousPassword = ref('')
+const newPassword = ref('')
+const confirmPassword = ref('')
+const passwordError = ref('')
+const successMessage = ref('')
+const copiedLink = ref('')
 
-const isPayoutAvailable = computed(() => balance.value > 0)
+function copyText(text: string) {
+  navigator.clipboard.writeText(text)
+  copiedLink.value = text
+  setTimeout(() => {
+    copiedLink.value = ''
+  }, 600)
+}
+
+async function handleChangePassword() {
+  passwordError.value = ''
+
+  if (!previousPassword.value || !newPassword.value || !confirmPassword.value) {
+    passwordError.value = 'Please fill out all fields.'
+    return
+  }
+  if (newPassword.value !== confirmPassword.value) {
+    passwordError.value = 'New passwords do not match.'
+    return
+  }
+  if (newPassword.value.length < 6) {
+    passwordError.value = 'Password must be at least 6 characters.'
+    return
+  }
+
+  try {
+    await api.post('api', {
+      previousPassword: previousPassword.value,
+      newPassword: newPassword.value
+    })
+    successMessage.value = 'Password Changed'
+    previousPassword.value = ''
+    newPassword.value = ''
+    confirmPassword.value = ''
+    setTimeout(() => successMessage.value = '', 3000)
+  } catch (err) {
+    passwordError.value = 'Server error, please try again.'
+  }
+}
+
 
 onMounted(async () => {
   try {
@@ -105,8 +203,18 @@ onMounted(async () => {
   }
 })
 
-function copyText(text: string) {
-  navigator.clipboard.writeText(text)
+function handleSubmitWallet() {
+  successMessage.value = 'Wallet Submitted'
+  setTimeout(() => successMessage.value = '', 3000)
+}
+
+function goToForgot() {
+  router.push('/forgot-password')
+}
+
+function signOut() {
+  localStorage.clear()
+  router.push('/login')
 }
 </script>
 
@@ -115,9 +223,10 @@ function copyText(text: string) {
   background-color: rgba(245, 245, 245, 1);
   color: #000;
   min-height: 100vh;
+  padding-bottom: 20px;
 
   &__banner {
-    height: 142px;
+    height: 100px;
     background: url('@/assets/images/dashboard-banner.webp');
     background-size: cover;
     background-position: center;
@@ -157,7 +266,7 @@ function copyText(text: string) {
     border-radius: 10px;
     padding: 50px;
     margin: 0 auto;
-    height: 800px;
+    height: auto;
   }
 
   &__cards {
@@ -257,6 +366,7 @@ function copyText(text: string) {
           align-items: center;
           justify-content: space-between;
           width: 100%;
+          gap: 20px;
 
           span {
             font-weight: 500;
@@ -351,6 +461,84 @@ function copyText(text: string) {
       }
     }
   }
+
+  .in-betweeen {
+    border-bottom: 1px solid rgba(204, 216, 233, 1);
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .sign-out-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 20px;
+
+    @media (max-width: 768px) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .signout-btn {
+      height: 40px;
+      width: auto;
+      border: 1px solid rgba(204, 216, 233, 1);
+      border-radius: 5px;
+      background: transparent;
+      color: rgba(30, 30, 30, 1);
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      padding: 10px 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      img {
+        width: 20px;
+      }
+
+      &:hover {
+        background-color: #e6991e;
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+
+        &:hover {
+          background-color: #e6991e;
+        }
+      }
+    }
+
+    .success-notification {
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      background: rgba(6, 116, 41, 1);
+      color: #fff;
+      font-weight: 500;
+      font-size: 16px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 400px;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 }
 
 .dashboard__placeholder {
@@ -358,6 +546,328 @@ function copyText(text: string) {
   margin-top: 54px;
   font-size: 18px;
   color: rgba(26, 26, 26, 0.7);
+}
+
+.dashboard__settings {
+  display: flex;
+  gap: 20px;
+  margin-top: 34px;
+  width: 100%;
+
+  .settings__left {
+    flex: 1;
+    background: transparent;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+
+    .submit-btn-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .submit-btn {
+        margin-top: 10px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 500;
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
+        width: 226px;
+        height: 40px;
+
+        &.green {
+          background: rgba(6, 116, 41, 1);
+          &:hover {
+            background: #065b23;
+          }
+        }
+      }
+
+      .forgot, .link {
+        color: rgba(49, 118, 177, 1);
+        cursor: pointer;
+        font-weight: 400;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #e6991e;
+        }
+      }
+    }
+  }
+
+  .settings__right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    justify-content: space-between;
+    padding: 24px;
+
+    .form-group-wallet {
+      padding: 24px;
+      background: rgba(243, 245, 252, 1);
+      display: flex;
+      flex-direction: column;
+      border-radius: 8px;
+
+      gap: 8px;
+
+      p {
+        font-size: 16px;
+        color: rgba(26, 26, 26, 1);
+        font-weight: 400;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: 500;
+        font-size: 14px;
+        color: rgba(26, 26, 26, 1);
+      }
+
+      input {
+        height: 42px;
+        border: 1px solid rgba(204, 216, 233, 1);
+        border-radius: 4px;
+        padding: 0 12px;
+        font-size: 14px;
+        color: rgba(26, 26, 26, 0.7);
+        background: rgba(255, 255, 255, 1);
+
+        &::placeholder {
+          color: rgba(26, 26, 26, 0.4);
+        }
+      }
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    .input-error {
+      color: rgba(255, 0, 0, 0.8);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    p {
+      font-size: 14px;
+      color: rgba(26, 26, 26, 1);
+      font-weight: 400;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(26, 26, 26, 1);
+    }
+
+    input {
+      height: 42px;
+      border: 1px solid rgba(204, 216, 233, 1);
+      border-radius: 4px;
+      padding: 0 12px;
+      font-size: 14px;
+      color: rgba(26, 26, 26, 0.7);
+      background: rgba(255, 255, 255, 1);
+
+      &::placeholder {
+        color: rgba(26, 26, 26, 0.4);
+      }
+    }
+  }
+
+  .submit-btn {
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+    cursor: pointer;
+    width: 226px;
+    height: 40px;
+
+    &.green {
+      background: rgba(6, 116, 41, 1);
+      &:hover {
+        background: #065b23;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard__glass {
+    width: 90%;
+    height: auto;
+    padding: 8px 14px;
+
+    .dashboard__title {
+      font-size: 22px;
+    }
+  }
+
+  .dashboard__container {
+    width: 90%;
+    padding: 30px 20px 60px 20px;
+  }
+
+  .dashboard__cards {
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+
+    .card-one,
+    .card-two {
+      width: 100%;
+      height: auto;
+
+      h2 {
+        font-size: 32px;
+      }
+
+      span {
+        font-size: 13px;
+      }
+    }
+
+    .card-two {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px;
+
+      .card-two-left,
+      .card-two-right {
+        width: 100%;
+        align-items: flex-start;
+      }
+
+      .spanned-text {
+        justify-content: space-between;
+        width: 100%;
+      }
+    }
+  }
+
+  .dashboard__tabs {
+    .tab {
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+  }
+
+  .dashboard__links {
+    .link-group {
+      gap: 12px;
+
+      label {
+        font-size: 16px;
+      }
+
+      .input-wrap {
+        height: 42px;
+
+        .fake-input {
+          font-size: 14px;
+        }
+
+        img {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    }
+  }
+
+  .dashboard__settings {
+    flex-direction: column;
+    gap: 60px;
+
+    .settings__left,
+    .settings__right {
+      width: 100%;
+      padding: 0;
+    }
+
+    .submit-btn-container {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: 20px;
+      gap: 0;
+
+      .submit-btn {
+        width: 100% !important;
+      }
+    }
+
+    .success-notification {
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+
+      background: rgba(6, 116, 41, 1);
+      color: #fff;
+      font-weight: 500;
+      font-size: 16px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 400px;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .settings__right {
+      align-items: flex-start;
+
+      .form-group-wallet {
+        padding: 20px;
+
+        p {
+          font-size: 14px;
+        }
+
+        label {
+          font-size: 13px;
+        }
+
+        input {
+          height: 40px;
+          font-size: 13px;
+        }
+      }
+
+      .submit-btn {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.blink {
+  animation: blinkAnim 0.2s ease;
+}
+
+@keyframes blinkAnim {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.1; }
 }
 </style>
 

@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import check from '@/assets/icons/check-btn.svg'
 import VueSignature from 'vue3-signature'
@@ -138,6 +138,12 @@ const agreeToTerms = ref(false)
 const signaturePad = ref<any>(null)
 const hasSignature = ref(false)
 const pendingRegistration = ref<any>(null)
+
+const isMobile = ref(window.innerWidth <= 768)
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 768
+}
 
 onMounted(() => {
   const data = localStorage.getItem('pendingRegistration')
@@ -159,12 +165,18 @@ function clearSignature() {
 
 async function handleAccept() {
   if (!agreeToTerms.value) return
+  if (!hasSignature.value) {
+    alert('Please provide your signature.')
+    return
+  }
+
+  const signatureDataUrl = signaturePad.value.saveSignature()
 
   try {
     await api.post('/auth/register/affiliate', {
       ...pendingRegistration.value,
       agreedToTerms: true,
-      agreementSignature: "lolz"
+      agreementSignature: signatureDataUrl,
     })
 
     localStorage.removeItem('pendingRegistration')
@@ -174,6 +186,13 @@ async function handleAccept() {
     alert('Registration failed. Please try again.')
   }
 }
+
+onMounted(() => {
+  window.addEventListener('resize', checkMobile)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
 </script>
 
 <style scoped lang="scss">
@@ -184,7 +203,7 @@ async function handleAccept() {
   padding-bottom: 10px;
 
   &__banner {
-    height: 142px;
+    height: 100px;
     background: url('@/assets/images/affiliate-banner.webp');
     background-size: cover;
     background-position: center;
@@ -192,6 +211,10 @@ async function handleAccept() {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 768px) {
+      background: url('@/assets/images/mobile-agreement-bg.webp');
+    }
   }
 
   &__glass {
@@ -216,8 +239,8 @@ async function handleAccept() {
   }
 
   &__content {
-    width: 1392px;
-    margin: 20px auto;
+    width: 1024px;
+    margin: 10px auto;
     display: flex;
     align-items: flex-start;
     flex-direction: column;
@@ -227,22 +250,22 @@ async function handleAccept() {
 
     .first-paragraph {
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
-      margin-bottom: 60px;
+      margin-bottom: 10px;
     }
 
     h3 {
-      font-size: 18px;
+      font-size: 16px;
       color: rgba(0, 0, 0, 1);
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     p {
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
     }
@@ -250,24 +273,24 @@ async function handleAccept() {
     .break-line {
       border-top: 1px solid rgba(0, 0, 0, 1);
       width: 100%;
-      margin: 60px 0;
+      margin: 20px 0;
     }
 
     .break-line-two {
       border-top: 1px solid rgba(0, 0, 0, 1);
       width: 100%;
-      margin: 30px 0;
+      margin: 20px 0;
     }
 
     .break-line-three {
       border-top: 1px solid rgba(0, 0, 0, 1);
       width: 100%;
-      margin: 60px 0 30px 0;
+      margin: 10px 0 20px 0;
     }
 
     .dif-margin-p {
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
       margin-bottom: 20px;
@@ -275,7 +298,7 @@ async function handleAccept() {
 
     .list-text-top {
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
       margin-bottom: 20px;
@@ -283,7 +306,7 @@ async function handleAccept() {
 
     .list-text-middle {
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
       margin: 20px 0;
@@ -291,7 +314,7 @@ async function handleAccept() {
 
     .list-text-bottom {
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
       margin-top: 20px;
@@ -301,12 +324,13 @@ async function handleAccept() {
       padding-left: 30px;
       list-style: disc;
       color: rgba(93, 90, 90, 1);
+      font-size: 14px;
     }
 
     .last-p {
       color: rgba(0, 0, 0, 1);
       font-weight: 400;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 22px;
       margin-bottom: 10px;
     }
@@ -372,7 +396,7 @@ async function handleAccept() {
 
           label {
             font-weight: 400;
-            font-size: 16px;
+            font-size: 14px;
             line-height: 20px;
             color: rgba(0, 0, 0, 0.5);
           }
@@ -383,7 +407,7 @@ async function handleAccept() {
           align-items: center;
           justify-content: center;
           gap: 10px;
-          height: 46px;
+          height: 40px;
           width: 174px;
           border-radius: 5px;
           padding: 10px 20px;
@@ -391,7 +415,7 @@ async function handleAccept() {
           background-color: rgba(241, 162, 59, 1);
           color: rgba(255, 255, 255, 1);
           font-weight: 500;
-          font-size: 16px;
+          font-size: 14px;
           cursor: pointer;
           transition: background 0.2s;
 
@@ -408,4 +432,79 @@ async function handleAccept() {
     }
   }
 }
+
+
+@media (max-width: 768px) {
+  .agreement__glass {
+    width: 90%;
+    height: auto;
+    padding: 8px 14px;
+    .agreement__title {
+      font-size: 22px;
+    }
+  }
+
+  .agreement__container {
+    width: 90%;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 20px 60px 20px;
+  }
+
+  .agreement__content {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .agreement__content {
+    .first-paragraph,
+    p,
+    .dif-margin-p,
+    .list-text-top,
+    .list-text-middle,
+    .list-text-bottom,
+    ul,
+    .last-p {
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    h3 {
+      font-size: 15px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .acceptance-form {
+      .signature-box {
+        width: 100%;
+
+        .canvas-wrapper {
+          width: 100%;
+        }
+      }
+
+      .acceptance-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+
+        .checkbox-container {
+          label {
+            font-size: 13px;
+          }
+        }
+
+        .accept-btn {
+          width: 100%;
+          font-size: 14px;
+          height: 42px;
+        }
+      }
+    }
+  }
+}
+
 </style>
