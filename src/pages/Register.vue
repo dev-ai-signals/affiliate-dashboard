@@ -25,11 +25,35 @@
           <input v-model="fullName" @input="sync('fullName', $event)" type="text" placeholder="eg. full name" />
 
           <label>Create Password</label>
-          <input v-model="password" @input="sync('password', $event)" type="password" placeholder="eg. xyz1234567" />
-
+          <div class="password-input-wrapper">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              @input="sync('password', $event)"
+              placeholder="eg. xyz1234567"
+            />
+            <img
+              src="@/assets/icons/eye.svg"
+              alt="Toggle visibility"
+              class="eye-icon"
+              @click="showPassword = !showPassword"
+            />
+          </div>
           <label>Confirm Password</label>
-          <input v-model="confirmPassword" @input="sync('confirmPassword', $event)" type="password" placeholder="eg. xyz1234567" />
-
+          <div class="password-input-wrapper">
+            <input
+              :type="showConfirmPassword ? 'text' : 'password'"
+              v-model="confirmPassword"
+              @input="sync('confirmPassword', $event)"
+              placeholder="eg. xyz1234567"
+            />
+            <img
+              src="@/assets/icons/eye.svg"
+              alt="Toggle visibility"
+              class="eye-icon"
+              @click="showConfirmPassword = !showConfirmPassword"
+            />
+          </div>
           <button type="submit">GET STARTED</button>
 
           <div class="switch-login">
@@ -51,7 +75,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 const isMobile = ref(window.innerWidth <= 768)
 
 const router = useRouter()
-
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 const email = ref('')
 const fullName = ref('')
 const password = ref('')
@@ -211,11 +236,39 @@ onUnmounted(() => {
       color: #000;
       font-weight: 400;
       font-size: 12px;
+      width: 100%;
+      padding-right: 35px;
+    }
 
-      &::placeholder {
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 12px;
+    .password-input-wrapper {
+      position: relative;
+
+      input {
+        padding: 11px 6px;
+        border-radius: 4px;
+        height: 39px;
+        border: 1px solid rgba(0, 0, 0, 0.26);
+        background: transparent;
+        color: #000;
         font-weight: 400;
+        font-size: 12px;
+        width: 100%;
+        padding-right: 35px;
+      }
+
+      .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
 
@@ -297,6 +350,24 @@ onUnmounted(() => {
 
       &::placeholder {
         font-size: 13px;
+      }
+    }
+
+    .password-input-wrapper {
+      input {
+        height: 42px;
+        font-size: 14px;
+        padding-right: 35px;
+
+        &::placeholder {
+          font-size: 13px;
+        }
+      }
+
+      .eye-icon {
+        width: 16px;
+        height: 16px;
+        right: 8px;
       }
     }
 

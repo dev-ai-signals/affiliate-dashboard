@@ -26,9 +26,35 @@
 
           <template v-else>
             <label>New Password</label>
-            <input v-model="password" type="password" placeholder="New password" />
+            <div class="password-input-wrapper">
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                v-model="password"
+                placeholder="New password"
+              />
+              <img
+                src="@/assets/icons/eye.svg"
+                alt="Toggle visibility"
+                class="eye-icon"
+                @click="showPassword = !showPassword"
+              />
+            </div>
+
             <label>Confirm Password</label>
-            <input v-model="confirmPassword" type="password" placeholder="Confirm password" />
+            <div class="password-input-wrapper">
+              <input
+                :type="showConfirmPassword ? 'text' : 'password'"
+                v-model="confirmPassword"
+                placeholder="Confirm password"
+              />
+              <img
+                src="@/assets/icons/eye.svg"
+                alt="Toggle visibility"
+                class="eye-icon"
+                @click="showConfirmPassword = !showConfirmPassword"
+              />
+            </div>
+
             <button type="submit">RESET PASSWORD</button>
           </template>
         </form>
@@ -47,7 +73,8 @@ import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
-
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 const isMobile = ref(window.innerWidth <= 768)
 
 function checkMobile() {
@@ -204,6 +231,38 @@ onUnmounted(() => {
       }
     }
 
+    .password-input-wrapper {
+      position: relative;
+
+      input {
+        padding: 11px 6px;
+        border-radius: 4px;
+        height: 39px;
+        border: 1px solid rgba(0, 0, 0, 0.26);
+        background: transparent;
+        color: #000;
+        font-weight: 400;
+        font-size: 12px;
+        width: 100%;
+        padding-right: 35px;
+      }
+
+      .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
     button {
       background-color: rgba(241, 162, 59, 1);
       height: 35px;
@@ -264,6 +323,24 @@ onUnmounted(() => {
 
       &::placeholder {
         font-size: 13px;
+      }
+    }
+
+    .password-input-wrapper {
+      input {
+        height: 42px;
+        font-size: 14px;
+        padding-right: 35px;
+
+        &::placeholder {
+          font-size: 13px;
+        }
+      }
+
+      .eye-icon {
+        width: 16px;
+        height: 16px;
+        right: 8px;
       }
     }
 

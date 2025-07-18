@@ -22,7 +22,20 @@
           <input v-model="email" type="email" placeholder="eg. name@gmail.com" />
 
           <label>Password</label>
-          <input v-model="password" type="password" placeholder="eg. xyz1234567" />
+          <div class="password-input-wrapper">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              placeholder="eg. xyz1234567"
+            />
+            <img
+              src="@/assets/icons/eye.svg"
+              alt="Toggle visibility"
+              class="eye-icon"
+              @click="showPassword = !showPassword"
+            />
+          </div>
+
 
           <button type="submit" :disabled="loading">LOGIN</button>
 
@@ -53,7 +66,7 @@ function checkMobile() {
 
 const userStore = useUserStore()
 const router = useRouter()
-
+const showPassword = ref(false)
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -216,6 +229,38 @@ onUnmounted(() => {
       }
     }
 
+    .password-input-wrapper {
+      position: relative;
+
+      input {
+        padding: 11px 6px;
+        border-radius: 4px;
+        height: 39px;
+        border: 1px solid rgba(0, 0, 0, 0.26);
+        background: transparent;
+        color: #000;
+        font-weight: 400;
+        font-size: 12px;
+        width: 100%;
+        padding-right: 35px;
+      }
+
+      .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
     button {
       background-color: rgba(241, 162, 59, 1);
       height: 35px;
@@ -299,6 +344,24 @@ onUnmounted(() => {
 
       &::placeholder {
         font-size: 13px;
+      }
+    }
+
+    .password-input-wrapper {
+      input {
+        height: 42px;
+        font-size: 14px;
+        padding-right: 35px;
+
+        &::placeholder {
+          font-size: 13px;
+        }
+      }
+
+      .eye-icon {
+        width: 16px;
+        height: 16px;
+        right: 8px;
       }
     }
 

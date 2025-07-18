@@ -67,15 +67,56 @@
         <div class="settings__left">
           <div class="form-group">
             <label>Previous Password</label>
-            <input type="password" placeholder="eg. Xyz1234" v-model="previousPassword" @input="passwordError = ''" />
+            <div class="password-input-wrapper">
+              <input
+                :type="showPreviousPassword ? 'text' : 'password'"
+                placeholder="eg. Xyz1234"
+                v-model="previousPassword"
+                @input="passwordError = ''"
+              />
+              <img
+                src="@/assets/icons/eye.svg"
+                alt="Toggle visibility"
+                class="eye-icon"
+                @click="showPreviousPassword = !showPreviousPassword"
+              />
+            </div>
+
           </div>
           <div class="form-group">
             <label>New Password</label>
-            <input type="password" placeholder="eg. Xyz1234" v-model="newPassword" @input="passwordError = ''" />
+            <div class="password-input-wrapper">
+              <input
+                :type="showNewPassword ? 'text' : 'password'"
+                placeholder="eg. Xyz1234"
+                v-model="newPassword"
+                @input="passwordError = ''"
+              />
+              <img
+                src="@/assets/icons/eye.svg"
+                alt="Toggle visibility"
+                class="eye-icon"
+                @click="showNewPassword = !showNewPassword"
+              />
+            </div>
           </div>
           <div class="form-group">
             <label>Confirm New Password</label>
-            <input type="password" placeholder="eg. Xyz1234" v-model="confirmPassword" @input="passwordError = ''" />
+            <div class="password-input-wrapper">
+              <input
+                :type="showConfirmPassword ? 'text' : 'password'"
+                placeholder="eg. Xyz1234"
+                v-model="confirmPassword"
+                @input="passwordError = ''"
+              />
+              <img
+                src="@/assets/icons/eye.svg"
+                alt="Toggle visibility"
+                class="eye-icon"
+                @click="showConfirmPassword = !showConfirmPassword"
+              />
+            </div>
+
             <p v-if="passwordError" class="input-error">{{ passwordError }}</p>
           </div>
           <div class="submit-btn-container">
@@ -134,6 +175,9 @@ window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth <= 768
 })
 
+const showPreviousPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
 const router = useRouter()
 const totalEarned = ref(0)
 const balance = ref(0)
@@ -683,6 +727,38 @@ function signOut() {
 
       &::placeholder {
         color: rgba(26, 26, 26, 0.4);
+      }
+    }
+
+    .password-input-wrapper {
+      position: relative;
+
+      input {
+        padding: 11px 6px;
+        border-radius: 4px;
+        height: 39px;
+        border: 1px solid rgba(0, 0, 0, 0.26);
+        background: transparent;
+        color: #000;
+        font-weight: 400;
+        font-size: 12px;
+        width: 100%;
+        padding-right: 35px;
+      }
+
+      .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
   }
