@@ -135,7 +135,7 @@
             <p>Enter your wallet address below to receive instant payouts from your personal and team sales.</p>
             <p>Please note: payouts are currently supported <strong>only via USDC on the ERC-20 network</strong>.</p>
             <label>Wallet Address</label>
-            <input type="text" placeholder="eg. 0x742d35Cc...f44e" />
+            <input type="text" v-model="walletAddress" placeholder="eg. 0x742d35Cc...f44e" />
           </div>
           <button class="submit-btn green" @click="handleSubmitWallet">Submit Wallet</button>
 
@@ -166,8 +166,23 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import api from '@/shared/api/axios'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/shared/composables/useAuth'
+import { useAffiliate } from '@/shared/composables/useAffiliate'
+import { useUserStore } from '@/shared/stores/user'
+
+
+const {
+  totalEarned,
+  balance,
+  signedUp,
+  affiliateLink,
+  tier2Link,
+  fetchDashboard,
+  submitWallet,
+} = useAffiliate()
+
+const { changePassword } = useAuth()
 
 const isMobile = ref(window.innerWidth <= 768)
 
@@ -179,12 +194,7 @@ const showPreviousPassword = ref(false)
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 const router = useRouter()
-const totalEarned = ref(0)
-const balance = ref(0)
-const signedUp = ref(0)
-const affiliateLink = ref('')
-const tier2Link = ref('')
-const tier2Info = ref<any>(null)
+
 const activeTab = ref<'links' | 'settings'>('links')
 const previousPassword = ref('')
 const newPassword = ref('')
@@ -192,6 +202,7 @@ const confirmPassword = ref('')
 const passwordError = ref('')
 const successMessage = ref('')
 const copiedLink = ref('')
+const walletAddress = ref('')
 
 function copyText(text: string) {
   navigator.clipboard.writeText(text)
@@ -218,10 +229,8 @@ async function handleChangePassword() {
   }
 
   try {
-    await api.post('api', {
-      previousPassword: previousPassword.value,
-      newPassword: newPassword.value
-    })
+    await changePassword(previousPassword.value, newPassword.value)
+
     successMessage.value = 'Password Changed'
     previousPassword.value = ''
     newPassword.value = ''
@@ -232,24 +241,27 @@ async function handleChangePassword() {
   }
 }
 
-
 onMounted(async () => {
-  try {
-    const { data } = await api.get('/affiliate/dashboard')
-    totalEarned.value = data.totalEarned
-    balance.value = data.balance
-    signedUp.value = data.signedUp
-    affiliateLink.value = data.affiliateLink
-    tier2Link.value = data.tier2Link
-    tier2Info.value = data.tier2Info
-  } catch (e) {
-    // handle error
+  const userStore = useUserStore()
+  await userStore.hydrate()
+
+  if (!userStore.userDto?.agreementSignedAt) {
+    router.push('/agreement')
+    return
   }
+
+  await fetchDashboard()
 })
 
-function handleSubmitWallet() {
-  successMessage.value = 'Wallet Submitted'
-  setTimeout(() => successMessage.value = '', 3000)
+async function handleSubmitWallet() {
+  try {
+    await submitWallet(walletAddress.value)
+    successMessage.value = 'Wallet Submitted'
+    setTimeout(() => successMessage.value = '', 3000)
+  } catch (err) {
+    successMessage.value = 'Failed to submit wallet'
+    setTimeout(() => successMessage.value = '', 3000)
+  }
 }
 
 function goToForgot() {

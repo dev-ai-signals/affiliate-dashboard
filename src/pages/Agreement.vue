@@ -131,28 +131,20 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import check from '@/assets/icons/check-btn.svg'
 import VueSignature from 'vue3-signature'
-import api from '@/shared/api/axios'
+import { useAgreement } from '@/shared/composables/useAgreement'
+import { useUserStore } from '@/shared/stores/user'
 
+const { signAffiliateAgreement } = useAgreement()
 const router = useRouter()
 const agreeToTerms = ref(false)
 const signaturePad = ref<any>(null)
 const hasSignature = ref(false)
-const pendingRegistration = ref<any>(null)
 
 const isMobile = ref(window.innerWidth <= 768)
 
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768
 }
-
-onMounted(() => {
-  const data = localStorage.getItem('pendingRegistration')
-  if (data) {
-    pendingRegistration.value = JSON.parse(data)
-  } else {
-    router.push('/register')
-  }
-})
 
 function updateHasSignature() {
   hasSignature.value = signaturePad.value?.isEmpty() === false
@@ -170,20 +162,30 @@ async function handleAccept() {
     return
   }
 
-  const signatureDataUrl = signaturePad.value.saveSignature()
+  const canvas = signaturePad.value.$el.querySelector('canvas') as HTMLCanvasElement
+  if (!canvas) {
+    alert('Failed to capture signature. Try again.')
+    return
+  }
+
+  const base64Signature = canvas.toDataURL('image/jpeg', 0.7)
 
   try {
-    await api.post('/auth/register/affiliate', {
-      ...pendingRegistration.value,
-      agreedToTerms: true,
-      agreementSignature: signatureDataUrl,
-    })
+    await signAffiliateAgreement(base64Signature)
 
-    localStorage.removeItem('pendingRegistration')
-    router.push('/login')
+    const userStore = useUserStore()
+    if (userStore.userDto) {
+      userStore.userDto = {
+        ...userStore.userDto,
+        agreementSignedAt: new Date().toISOString()
+      }
+    }
+    localStorage.setItem('userSession', JSON.stringify(userStore.$state))
+
+    router.push('/dashboard')
   } catch (err) {
     console.error(err)
-    alert('Registration failed. Please try again.')
+    alert('Agreement failed. Please try again.')
   }
 }
 

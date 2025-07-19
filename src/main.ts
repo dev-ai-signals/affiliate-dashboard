@@ -13,6 +13,24 @@ import { useUserStore } from '@/shared/stores/user'
 const userStore = useUserStore()
 userStore.hydrate()
 
-app.use(router)
+router.beforeEach((to, _from, next) => {
+  const isLoggedIn = userStore.isLoggedIn
+  const hasSignedAgreement = userStore.userDto?.agreementSignedAt !== null
 
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next('/login')
+  }
+
+  if (isLoggedIn && !hasSignedAgreement && to.path !== '/agreement') {
+    return next('/agreement')
+  }
+
+  if (isLoggedIn && hasSignedAgreement && to.path === '/agreement') {
+    return next('/dashboard')
+  }
+
+  next()
+})
+
+app.use(router)
 app.mount('#app')

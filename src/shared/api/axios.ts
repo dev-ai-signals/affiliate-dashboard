@@ -8,6 +8,11 @@ const api = axios.create({
 
 api.interceptors.request.use(
   config => {
+    const skipAuth = ['/auth/login', '/auth/register/affiliate']
+    if (skipAuth.includes(config.url || '')) {
+      return config
+    }
+
     const userStore = useUserStore()
     const token = userStore.token
 

@@ -5,31 +5,59 @@
         <h1 class="reset__title">Password Reset</h1>
       </div>
     </div>
+
     <div class="reset__container">
       <div class="reset__left">
         <img v-if="!isMobile" :src="resetImage" alt="Reset illustration" />
         <div v-else class="mobile-top-content">
           <img class="logo" :src="logo" alt="AI Signals Logo" />
-          <img :src="mobileResetImage" alt="Mobile Content Image">
+          <img :src="mobileResetImage" alt="Mobile Content Image" />
         </div>
       </div>
 
       <div class="reset__right">
         <img v-if="!isMobile" class="logo" :src="logo" alt="AI Signals Logo" />
+
         <form class="reset__form" @submit.prevent="handleSubmit">
-          <label>Registered Email</label>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="eg. name@aisignals.com"
-            :disabled="!!successMessage"
-          />
+          <label>New Password</label>
+          <div class="password-input-wrapper">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              placeholder="New password"
+              @input="passwordError = ''"
+            />
+            <img
+              src="@/assets/icons/eye.svg"
+              alt="Toggle visibility"
+              class="eye-icon"
+              @click="showPassword = !showPassword"
+            />
+          </div>
+
+          <label>Confirm Password</label>
+          <div class="password-input-wrapper">
+            <input
+              :type="showConfirmPassword ? 'text' : 'password'"
+              v-model="confirmPassword"
+              placeholder="Confirm password"
+              @input="passwordError = ''"
+            />
+            <img
+              src="@/assets/icons/eye.svg"
+              alt="Toggle visibility"
+              class="eye-icon"
+              @click="showConfirmPassword = !showConfirmPassword"
+            />
+          </div>
+          <p v-if="passwordError" class="input-error">{{ passwordError }}</p>
+
           <button type="submit" :disabled="!!successMessage">
-            {{ successMessage ? 'LINK SENT' : 'GET A LINK' }}
+            {{ successMessage ? 'REDIRECTING...' : 'RESET PASSWORD' }}
           </button>
 
-          <div class="success-wrapper">
-            <div v-if="successMessage" class="success-notification">
+          <div v-if="successMessage" class="success-wrapper">
+            <div class="success-notification">
               <img src="@/assets/icons/check-green.svg" alt="Success Icon" />
               {{ successMessage }}
             </div>
@@ -45,29 +73,47 @@ import resetImage from '@/assets/images/reset-image.webp'
 import mobileResetImage from '@/assets/images/mobile-reset-content.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '@/shared/composables/useAuth'
 
-const { forgotPassword } = useAuth()
-
-const isMobile = ref(window.innerWidth <= 768)
+const { resetPassword } = useAuth()
+const passwordError = ref('')
 const successMessage = ref('')
-const email = ref('')
+const route = useRoute()
+const router = useRouter()
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const isMobile = ref(window.innerWidth <= 768)
+const password = ref('')
+const confirmPassword = ref('')
 
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768
 }
 
 async function handleSubmit() {
-  try {
-    await forgotPassword(email.value)
-    successMessage.value = 'Reset link sent, please check your inbox.'
+  if (!password.value || !confirmPassword.value) {
+    alert('Please enter both fields')
+    return
+  }
 
+  if (password.value !== confirmPassword.value) {
+    passwordError.value = 'New passwords do not match.'
+    return
+  }
+
+  try {
+    const token = route.query.token as string
+    await resetPassword(token, password.value)
+
+    successMessage.value = 'Password successfully reset. Redirecting...'
+    password.value = ''
+    confirmPassword.value = ''
     setTimeout(() => {
-      successMessage.value = ''
-      email.value = ''
-    }, 5000)
+      router.push('/login')
+    }, 3000)
   } catch (err) {
-    alert('Failed to send reset link')
+    alert('Reset failed')
     console.error(err)
   }
 }
@@ -82,23 +128,20 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .reset {
-  background-color: rgba(245, 245, 245, 1);
+  background-color: #f5f5f5;
   color: #000;
   min-height: 100vh;
   padding-bottom: 10px;
 
   &__banner {
     height: 100px;
-    background: url('@/assets/images/reset-banner.webp');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: url('@/assets/images/reset-banner.webp') center/cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
 
     @media (max-width: 768px) {
-      background: url('@/assets/images/mobile-reset-bg.webp');
+      background: url('@/assets/images/mobile-reset-bg.webp') center/cover no-repeat;
     }
   }
 
@@ -110,7 +153,6 @@ onUnmounted(() => {
     justify-content: center;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
     border-radius: 10px;
     padding: 10px 20px;
     gap: 10px;
@@ -138,7 +180,6 @@ onUnmounted(() => {
     img {
       border-radius: 10px;
       max-width: 392px;
-      height: auto;
     }
 
     .mobile-top-content {
@@ -158,10 +199,6 @@ onUnmounted(() => {
     align-items: center;
     width: 354px;
     gap: 9px;
-
-    .logo {
-      width: 50px;
-    }
   }
 
   &__form {
@@ -170,50 +207,16 @@ onUnmounted(() => {
     width: 100%;
     gap: 9px;
 
+    .input-error {
+      color: rgba(255, 0, 0, 0.8);
+      font-size: 12px;
+      transition: opacity 0.2s ease;
+    }
+
     label {
       font-weight: 500;
       font-size: 12px;
       color: #000;
-    }
-
-    input {
-      padding: 11px 6px;
-      border-radius: 4px;
-      height: 39px;
-      border: 1px solid rgba(0, 0, 0, 0.26);
-      background: transparent;
-      color: #000;
-      font-weight: 400;
-      font-size: 12px;
-
-      &::placeholder {
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 12px;
-        font-weight: 400;
-      }
-    }
-
-    button {
-      background-color: rgba(241, 162, 59, 1);
-      height: 35px;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      padding: 10px 20px;
-      font-weight: 500;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-
-      &:hover {
-        background-color: #e6991e;
-      }
-
-      &:disabled {
-        background-color: #cccccc;
-        cursor: not-allowed;
-        color: #888888;
-      }
     }
 
     .success-wrapper {
@@ -224,19 +227,75 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         gap: 10px;
-        background: rgba(6, 116, 41, 1);
+        background: #067429;
         color: #fff;
         font-weight: 500;
         font-size: 14px;
         padding: 10px 20px;
         border-radius: 5px;
         width: 100%;
-        max-width: 400px;
 
         img {
           width: 18px;
           height: 18px;
         }
+      }
+    }
+
+    .password-input-wrapper {
+      position: relative;
+
+      input {
+        width: 100%;
+        padding: 11px 6px 11px 6px;
+        padding-right: 35px;
+        border-radius: 4px;
+        height: 39px;
+        border: 1px solid rgba(0, 0, 0, 0.26);
+        background: transparent;
+        color: #000;
+        font-size: 12px;
+
+        &::placeholder {
+          color: rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+    button {
+      background-color: #f1a23b;
+      height: 35px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      font-weight: 500;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background-color: #e6991e;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        color: #888;
+        cursor: not-allowed;
       }
     }
   }
@@ -245,7 +304,6 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .reset__glass {
     width: 90%;
-    height: auto;
     padding: 8px 14px;
 
     .reset__title {
@@ -257,7 +315,7 @@ onUnmounted(() => {
     width: 90%;
     flex-direction: column;
     gap: 20px;
-    padding: 30px 20px 60px 20px;
+    padding: 30px 20px 60px;
   }
 
   .reset__left img {
@@ -269,10 +327,6 @@ onUnmounted(() => {
 
   .reset__right {
     width: 100%;
-
-    .logo {
-      width: 40px;
-    }
   }
 
   .reset__form {
@@ -293,13 +347,20 @@ onUnmounted(() => {
       }
     }
 
-    input {
+    .password-input-wrapper input {
       height: 42px;
       font-size: 14px;
+      padding-right: 35px;
 
       &::placeholder {
         font-size: 13px;
       }
+    }
+
+    .eye-icon {
+      width: 16px;
+      height: 16px;
+      right: 8px;
     }
 
     button {

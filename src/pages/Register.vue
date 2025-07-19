@@ -19,10 +19,22 @@
 
         <form class="register__form" @submit="handleSubmit">
           <label>Email</label>
-          <input v-model="email" @input="sync('email', $event)" type="email" placeholder="eg. name@gmail.com" />
+          <input
+            v-model="email"
+            @input="sync('email', $event)"
+            type="email"
+            placeholder="eg. name@gmail.com"
+            :disabled="!!successMessage"
+          />
 
           <label>Full Name</label>
-          <input v-model="fullName" @input="sync('fullName', $event)" type="text" placeholder="eg. full name" />
+          <input
+            v-model="fullName"
+            @input="sync('fullName', $event)"
+            type="text"
+            placeholder="eg. full name"
+            :disabled="!!successMessage"
+          />
 
           <label>Create Password</label>
           <div class="password-input-wrapper">
@@ -31,6 +43,7 @@
               v-model="password"
               @input="sync('password', $event)"
               placeholder="eg. xyz1234567"
+              :disabled="!!successMessage"
             />
             <img
               src="@/assets/icons/eye.svg"
@@ -46,6 +59,7 @@
               v-model="confirmPassword"
               @input="sync('confirmPassword', $event)"
               placeholder="eg. xyz1234567"
+              :disabled="!!successMessage"
             />
             <img
               src="@/assets/icons/eye.svg"
@@ -54,10 +68,19 @@
               @click="showConfirmPassword = !showConfirmPassword"
             />
           </div>
-          <button type="submit">GET STARTED</button>
+          <button type="submit" :disabled="!!successMessage">
+            {{ successMessage ? 'LINK SENT' : 'GET STARTED' }}
+          </button>
 
           <div class="switch-login">
             Already have an account? <span @click="goToLogin">Login</span>
+          </div>
+
+          <div class="success-wrapper">
+            <div v-if="successMessage" class="success-notification">
+              <img src="@/assets/icons/check-green.svg" alt="Success Icon" />
+              {{ successMessage }}
+            </div>
           </div>
         </form>
       </div>
@@ -71,8 +94,15 @@ import mobileRegisterImage from '@/assets/images/mobile-register-content.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useAuth } from '@/shared/composables/useAuth'
+import { useRoute } from 'vue-router'
+import { useUserStore } from '@/shared/stores/user'
 
+const route = useRoute()
+
+const { register } = useAuth()
 const isMobile = ref(window.innerWidth <= 768)
+const userStore = useUserStore()
 
 const router = useRouter()
 const showPassword = ref(false)
@@ -81,6 +111,7 @@ const email = ref('')
 const fullName = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const successMessage = ref('')
 
 async function handleSubmit(e: Event) {
   e.preventDefault()
@@ -95,14 +126,23 @@ async function handleSubmit(e: Event) {
     return
   }
 
-  localStorage.setItem('pendingRegistration', JSON.stringify({
-    email: email.value,
-    fullName: fullName.value,
-    password: password.value,
-    confirmPassword: confirmPassword.value
-  }))
+  try {
+    await register({
+      email: email.value,
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+      fullName: fullName.value,
+      ...(userStore.referralCode ? { referralCode: userStore.referralCode } : {})
+    })
 
-  router.push('/agreement')
+    successMessage.value = 'Activation link sent. Please check your inbox.'
+    setTimeout(() => {
+      router.push('/login')
+    }, 5000)
+  } catch (err) {
+    console.error(err)
+    alert('Registration failed')
+  }
 }
 
 function checkMobile() {
@@ -123,7 +163,13 @@ function goToLogin() {
 
 onMounted(() => {
   window.addEventListener('resize', checkMobile)
+
+  const refCode = route.query.ref
+  if (typeof refCode === 'string') {
+    userStore.setReferral(refCode)
+  }
 })
+
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
@@ -221,6 +267,30 @@ onUnmounted(() => {
     width: 100%;
     gap: 9px;
 
+    .success-wrapper {
+      height: 44px;
+      margin-top: 12px;
+
+      .success-notification {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(6, 116, 41, 1);
+        color: #fff;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 400px;
+
+        img {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+
     label {
       font-weight: 500;
       font-size: 12px;
@@ -286,6 +356,12 @@ onUnmounted(() => {
 
       &:hover {
         background-color: #e6991e;
+      }
+
+      &:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        color: #888888;
       }
     }
 

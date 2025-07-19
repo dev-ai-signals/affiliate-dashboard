@@ -4,11 +4,13 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     token: '',
     email: '',
+    referralCode: '',
     userDto: null as null | {
       id: string
       email: string
       fullName: string
       roles: string[]
+      agreementSignedAt: string | null
     },
     isLoggedIn: false,
   }),
@@ -16,9 +18,18 @@ export const useUserStore = defineStore('user', {
     login(payload: { token: string, userDto: any }) {
       this.token = payload.token
       this.email = payload.userDto.email
-      this.userDto = payload.userDto
+      this.userDto = {
+        id: payload.userDto.id,
+        email: payload.userDto.email,
+        fullName: payload.userDto.fullName,
+        roles: payload.userDto.roles,
+        agreementSignedAt: payload.userDto.agreementSignedAt ?? null
+      }
       this.isLoggedIn = true
       localStorage.setItem('userSession', JSON.stringify(this.$state))
+    },
+    setReferral(code: string) {
+      this.referralCode = code
     },
     logout() {
       this.token = ''

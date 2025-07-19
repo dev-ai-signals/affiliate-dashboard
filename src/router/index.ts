@@ -15,16 +15,23 @@ const routes = [
     component: () => import('@/pages/ForgotPassword.vue'),
   },
   {
+    path: '/reset-password',
+    component: () => import('@/pages/ResetPassword.vue'),
+  },
+  {
     path: '/agreement',
     component: () => import('@/pages/Agreement.vue'),
   },
   {
     path: '/dashboard',
     component: () => import('@/pages/Dashboard/DashboardHome.vue'),
-  },
+    meta: { requiresAuth: true }
+  }
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+export default router

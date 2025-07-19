@@ -55,8 +55,7 @@ import mobileLoginImage from '@/assets/images/mobile-login-content.webp'
 import logo from '@/assets/icons/logo-notext.svg'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
-import api from '@/shared/api/axios'
-import { useUserStore } from '@/shared/stores/user'
+import { useAuth } from '@/shared/composables/useAuth'
 
 const isMobile = ref(window.innerWidth <= 768)
 
@@ -64,12 +63,13 @@ function checkMobile() {
   isMobile.value = window.innerWidth <= 768
 }
 
-const userStore = useUserStore()
 const router = useRouter()
 const showPassword = ref(false)
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
+
+const { login } = useAuth()
 
 async function handleSubmit(e: Event) {
   e.preventDefault()
@@ -81,13 +81,7 @@ async function handleSubmit(e: Event) {
 
   loading.value = true
   try {
-    const { data } = await api.post('/auth/login', {
-      email: email.value,
-      password: password.value,
-    })
-
-    userStore.login(data)
-    router.push('/dashboard')
+    await login(email.value, password.value)
   } catch (err: any) {
     console.error('Login failed:', err)
     alert('Login failed. Please check your credentials.')
@@ -95,7 +89,6 @@ async function handleSubmit(e: Event) {
     loading.value = false
   }
 }
-
 
 function goToForgot() {
   router.push('/forgot-password')
