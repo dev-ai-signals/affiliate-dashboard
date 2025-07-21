@@ -136,6 +136,7 @@
             <p>Please note: payouts are currently supported <strong>only via USDC on the ERC-20 network</strong>.</p>
             <label>Wallet Address</label>
             <input type="text" v-model="walletAddress" placeholder="eg. 0x742d35Cc...f44e" />
+            <p v-if="errorMessage" class="input-error">{{ errorMessage }}</p>
           </div>
           <button class="submit-btn green" @click="handleSubmitWallet">Submit Wallet</button>
 
@@ -253,14 +254,18 @@ onMounted(async () => {
   await fetchDashboard()
 })
 
+const errorMessage = ref('')
+
 async function handleSubmitWallet() {
   try {
     await submitWallet(walletAddress.value)
     successMessage.value = 'Wallet Submitted'
+    errorMessage.value = ''
     setTimeout(() => successMessage.value = '', 3000)
   } catch (err) {
-    successMessage.value = 'Failed to submit wallet'
-    setTimeout(() => successMessage.value = '', 3000)
+    errorMessage.value = 'Failed to submit wallet'
+    successMessage.value = ''
+    setTimeout(() => errorMessage.value = '', 3000)
   }
 }
 
@@ -701,6 +706,12 @@ function signOut() {
           color: rgba(26, 26, 26, 0.4);
         }
       }
+
+      .input-error {
+        color: rgba(255, 0, 0, 0.8);
+        font-size: 13px;
+        margin-top: 4px;
+      }
     }
   }
 
@@ -896,6 +907,14 @@ function signOut() {
 
       .submit-btn {
         width: 100% !important;
+      }
+
+      .forgot, .link {
+        width: 100%;
+
+        &:hover {
+          color: #e6991e;
+        }
       }
     }
 

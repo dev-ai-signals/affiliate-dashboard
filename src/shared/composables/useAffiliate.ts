@@ -20,11 +20,14 @@ export function useAffiliate() {
   }
 
   async function submitWallet(address: string) {
-    await api.post('/affiliate/wallet/update', {
+    const payload = {
+      code: 'USDC',
       walletAddresses: {
-        usdc: address,
-      },
-    })
+        USDC: address,
+      }
+    }
+
+    await api.post('/affiliate/wallet/update', payload)
   }
 
   return {
