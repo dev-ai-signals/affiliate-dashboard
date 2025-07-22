@@ -26,6 +26,7 @@
             placeholder="eg. name@gmail.com"
             :disabled="!!successMessage"
           />
+          <p v-if="errors.email" class="error-text">{{ errors.email }}</p>
 
           <label>Full Name</label>
           <input
@@ -35,6 +36,7 @@
             placeholder="eg. full name"
             :disabled="!!successMessage"
           />
+          <p v-if="errors.fullName" class="error-text">{{ errors.fullName }}</p>
 
           <label>Create Password</label>
           <div class="password-input-wrapper">
@@ -52,6 +54,7 @@
               @click="showPassword = !showPassword"
             />
           </div>
+          <p v-if="errors.password" class="error-text">{{ errors.password }}</p>
           <label>Confirm Password</label>
           <div class="password-input-wrapper">
             <input
@@ -68,6 +71,7 @@
               @click="showConfirmPassword = !showConfirmPassword"
             />
           </div>
+          <p v-if="errors.confirmPassword" class="error-text">{{ errors.confirmPassword }}</p>
           <button type="submit" :disabled="!!successMessage">
             {{ successMessage ? 'LINK SENT' : 'GET STARTED' }}
           </button>
@@ -113,18 +117,41 @@ const password = ref('')
 const confirmPassword = ref('')
 const successMessage = ref('')
 
+const errors = ref<Record<string, string>>({})
+
 async function handleSubmit(e: Event) {
   e.preventDefault()
+  errors.value = {}
 
-  if (!email.value || !fullName.value || !password.value || !confirmPassword.value) {
-    alert('Please fill out all fields.')
-    return
+  let hasClientError = false
+
+  if (!email.value) {
+    errors.value.email = 'Email is required'
+    hasClientError = true
   }
 
-  if (password.value !== confirmPassword.value) {
-    alert('Passwords do not match.')
-    return
+  if (!fullName.value) {
+    errors.value.fullName = 'Full name is required'
+    hasClientError = true
   }
+
+
+  if (!password.value) {
+    errors.value.password = 'Password is required'
+    hasClientError = true
+  }
+
+  if (!confirmPassword.value) {
+    errors.value.confirmPassword = 'Please confirm your password'
+    hasClientError = true
+  }
+
+  if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+    errors.value.confirmPassword = 'Passwords do not match'
+    hasClientError = true
+  }
+
+  if (hasClientError) return
 
   try {
     await register({
@@ -139,9 +166,12 @@ async function handleSubmit(e: Event) {
     setTimeout(() => {
       router.push('/login')
     }, 5000)
-  } catch (err) {
-    console.error(err)
-    alert('Registration failed')
+  } catch (err: any) {
+    if (err.response?.status === 400 && err.response.data) {
+      errors.value = err.response.data
+    } else {
+      errors.value.email = 'Registration failed. Please try again.'
+    }
   }
 }
 
@@ -151,10 +181,13 @@ function checkMobile() {
 
 function sync(field: string, e: Event) {
   const value = (e.target as HTMLInputElement).value
+
   if (field === 'email') email.value = value
   if (field === 'fullName') fullName.value = value
   if (field === 'password') password.value = value
   if (field === 'confirmPassword') confirmPassword.value = value
+
+  if (errors.value[field]) delete errors.value[field]
 }
 
 function goToLogin() {
@@ -289,6 +322,11 @@ onUnmounted(() => {
           height: 18px;
         }
       }
+    }
+
+    .error-text {
+      color: #f44336;
+      font-size: 0.6rem;
     }
 
     label {
