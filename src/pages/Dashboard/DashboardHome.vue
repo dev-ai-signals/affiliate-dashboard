@@ -14,12 +14,7 @@
         </div>
 
         <div class="card-two">
-          <div class="card-two-left">
-            <h2>${{ balance.toFixed(2) }}</h2>
-            <span>Current Sales</span>
-          </div>
           <div class="card-two-right">
-            <div></div>
             <div class="spanned-text">
               <span>SIGNED UP</span>
               <span class="darken">{{ signedUp }}</span>
@@ -54,7 +49,7 @@
           </div>
         </div>
 
-        <div class="link-group">
+        <div class="link-group" v-if="affiliateLink">
           <label><strong>Recruit Link</strong></label>
           <div class="input-wrap" @click="copyText(affiliateLink)">
             <span class="fake-input">{{ affiliateLink }}</span>
@@ -175,7 +170,6 @@ import { useUserStore } from '@/shared/stores/user'
 
 const {
   totalEarned,
-  balance,
   signedUp,
   affiliateLink,
   tier2Link,
@@ -362,7 +356,7 @@ function signOut() {
     }
 
     .card-two {
-      width: 622px;
+      width: 298px;
       height: 126px;
       background: rgba(243, 245, 252, 1);
       border-radius: 8px;
@@ -398,6 +392,7 @@ function signOut() {
         flex-direction: column;
         align-items: flex-start;
         justify-content: space-between;
+        width: 100%;
 
         .payout-btn {
           width: 226px;
@@ -427,7 +422,6 @@ function signOut() {
           align-items: center;
           justify-content: space-between;
           width: 100%;
-          gap: 20px;
 
           span {
             font-weight: 500;
@@ -439,6 +433,7 @@ function signOut() {
             font-weight: 600;
             font-size: 16px;
             color: rgba(26, 26, 26, 1);
+            margin-left: auto;
           }
         }
       }

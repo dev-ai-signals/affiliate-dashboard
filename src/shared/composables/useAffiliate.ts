@@ -12,11 +12,10 @@ export function useAffiliate() {
   async function fetchDashboard() {
     const { data } = await api.get('/affiliate/dashboard')
     totalEarned.value = data.totalEarned
-    balance.value = data.balance
     signedUp.value = data.signedUp
-    affiliateLink.value = data.affiliateLink
-    tier2Link.value = data.tier2Link
-    tier2Info.value = data.tier2Info
+    affiliateLink.value = data.inviteAffiliateLink ?? ''
+    tier2Link.value = data.productLink ?? ''
+    tier2Info.value = data.invitedAffiliates ?? null
   }
 
   async function submitWallet(address: string) {
