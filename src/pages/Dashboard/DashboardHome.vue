@@ -293,7 +293,7 @@ function signOut() {
   }
 
   &__glass {
-    width: 1380px;
+    width: 1180px;
     height: 80px;
     display: flex;
     align-items: center;
@@ -307,19 +307,19 @@ function signOut() {
   }
 
   &__title {
-    font-size: 36px;
+    font-size: 32px;
     color: #fff;
     font-weight: 600;
   }
 
   &__container {
-    width: 1392px;
+    width: 1180px;
     display: flex;
     align-items: flex-start;
     flex-direction: column;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 10px;
-    padding: 50px;
+    padding: 20px 40px;
     margin: 0 auto;
     height: auto;
   }
@@ -327,12 +327,12 @@ function signOut() {
   &__cards {
     display: flex;
     gap: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 
     .card-one {
       flex: 1;
-      width: 298px;
-      height: 126px;
+      width: 228px;
+      height: 122px;
       background: rgba(243, 245, 252, 1);
       border-radius: 8px;
       padding: 20px;
@@ -343,7 +343,7 @@ function signOut() {
       position: relative;
 
       h2 {
-        font-size: 40px;
+        font-size: 32px;
         font-weight: 600;
         color: rgba(93, 128, 249, 1);
       }
@@ -356,8 +356,8 @@ function signOut() {
     }
 
     .card-two {
-      width: 298px;
-      height: 126px;
+      width: 228px;
+      height: 122px;
       background: rgba(243, 245, 252, 1);
       border-radius: 8px;
       padding: 20px 50px 20px 20px;
@@ -367,7 +367,7 @@ function signOut() {
       justify-content: space-between;
 
       h2 {
-        font-size: 40px;
+        font-size: 32px;
         font-weight: 600;
         color: rgba(93, 128, 249, 1);
       }
@@ -393,29 +393,6 @@ function signOut() {
         align-items: flex-start;
         justify-content: space-between;
         width: 100%;
-
-        .payout-btn {
-          width: 226px;
-          padding: 10px 19px;
-          border: none;
-          border-radius: 5px;
-          font-weight: 500;
-          font-size: 16px;
-          color: rgba(255, 255, 255, 1);
-
-          background-color: rgba(193, 193, 193, 1);
-          cursor: not-allowed;
-
-          &.active {
-            background-color: rgba(6, 116, 41, 1);
-            cursor: pointer;
-            transition: background 0.2s;
-
-            &:hover {
-              background: #065b23;
-            }
-          }
-        }
 
         .spanned-text {
           display: flex;
@@ -447,13 +424,13 @@ function signOut() {
     border-bottom: 1px solid rgba(204, 216, 233, 1);
 
     .tab {
-      padding: 10px 19px;
+      padding: 8px 22px;
       border: 1px solid rgba(204, 216, 233, 1);
       background: rgba(255, 255, 255, 1);
       border-radius: 5px;
       cursor: pointer;
       font-weight: 500;
-      font-size: 16px;
+      font-size: 14px;
       color: rgba(26, 26, 26, 1);
 
       &:not(.active):hover {
@@ -474,19 +451,19 @@ function signOut() {
   &__links {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    margin-top: 54px;
+    gap: 20px;
+    margin-top: 40px;
     width: 100%;
 
     .link-group {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 4px;
 
       label {
         display: block;
         font-weight: 500;
-        font-size: 20px;
+        font-size: 16px;
         color: rgba(31, 41, 55, 1);
       }
 
@@ -496,13 +473,13 @@ function signOut() {
         background: rgba(229, 227, 227, 0.6);
         border-radius: 5px;
         padding: 0 10px;
-        height: 46px;
+        height: 36px;
         width: 100%;
 
         .fake-input {
           flex: 1;
           font-weight: 400;
-          font-size: 16px;
+          font-size: 14px;
           color: rgba(0, 0, 0, 0.4);
           white-space: nowrap;
           overflow: hidden;
@@ -510,8 +487,8 @@ function signOut() {
         }
 
         img {
-          width: 38px;
-          height: 38px;
+          width: 28px;
+          height: 28px;
           cursor: pointer;
         }
       }
@@ -521,7 +498,7 @@ function signOut() {
   .in-betweeen {
     border-bottom: 1px solid rgba(204, 216, 233, 1);
     width: 100%;
-    margin-top: 40px;
+    margin-top: 10px;
   }
 
   .sign-out-container {
@@ -529,7 +506,7 @@ function signOut() {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 10px;
 
     @media (max-width: 768px) {
       display: flex;
@@ -539,14 +516,14 @@ function signOut() {
     }
 
     .signout-btn {
-      height: 40px;
+      height: 36px;
       width: auto;
       border: 1px solid rgba(204, 216, 233, 1);
       border-radius: 5px;
       background: transparent;
       color: rgba(30, 30, 30, 1);
       font-weight: 500;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
       transition: background 0.2s, color 0.2s;
       padding: 10px 20px;
@@ -557,7 +534,7 @@ function signOut() {
       gap: 5px;
 
       img {
-        width: 20px;
+        width: 16px;
       }
 
       &:hover {
@@ -583,7 +560,7 @@ function signOut() {
       background: rgba(6, 116, 41, 1);
       color: #fff;
       font-weight: 500;
-      font-size: 16px;
+      font-size: 14px;
       padding: 10px 20px;
       border-radius: 5px;
       width: 100%;
@@ -597,24 +574,17 @@ function signOut() {
   }
 }
 
-.dashboard__placeholder {
-  width: 100%;
-  margin-top: 54px;
-  font-size: 18px;
-  color: rgba(26, 26, 26, 0.7);
-}
-
 .dashboard__settings {
   display: flex;
-  gap: 20px;
-  margin-top: 34px;
+  gap: 40px;
+  margin-top: 0;
   width: 100%;
 
   .settings__left {
     flex: 1;
     background: transparent;
     border-radius: 8px;
-    padding: 24px;
+    padding: 24px 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -626,15 +596,14 @@ function signOut() {
       justify-content: space-between;
 
       .submit-btn {
-        margin-top: 10px;
         border: none;
         border-radius: 5px;
         font-weight: 500;
-        font-size: 16px;
+        font-size: 14px;
         color: #fff;
         cursor: pointer;
-        width: 226px;
-        height: 40px;
+        width: 200px;
+        height: 36px;
 
         &.green {
           background: rgba(6, 116, 41, 1);
@@ -649,6 +618,7 @@ function signOut() {
         cursor: pointer;
         font-weight: 400;
         transition: color 0.2s;
+        font-size: 14px;
 
         &:hover {
           color: #e6991e;
@@ -664,19 +634,19 @@ function signOut() {
     align-items: flex-end;
     gap: 10px;
     justify-content: space-between;
-    padding: 24px;
+    padding: 20px 0;
 
     .form-group-wallet {
-      padding: 24px;
+      padding: 20px;
       background: rgba(243, 245, 252, 1);
       display: flex;
       flex-direction: column;
       border-radius: 8px;
 
-      gap: 8px;
+      gap: 2px;
 
       p {
-        font-size: 16px;
+        font-size: 14px;
         color: rgba(26, 26, 26, 1);
         font-weight: 400;
         margin-bottom: 20px;
@@ -714,7 +684,7 @@ function signOut() {
     display: flex;
     flex-direction: column;
 
-    gap: 8px;
+    gap: 4px;
 
     .input-error {
       color: rgba(255, 0, 0, 0.8);
@@ -785,11 +755,11 @@ function signOut() {
     border: none;
     border-radius: 5px;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 14px;
     color: #fff;
     cursor: pointer;
-    width: 226px;
-    height: 40px;
+    width: 200px;
+    height: 36px;
 
     &.green {
       background: rgba(6, 116, 41, 1);
@@ -897,7 +867,7 @@ function signOut() {
     .submit-btn-container {
       flex-direction: column;
       align-items: flex-start;
-      margin-top: 20px;
+      margin-top: 10px;
       gap: 0;
 
       .submit-btn {
