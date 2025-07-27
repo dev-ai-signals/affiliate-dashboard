@@ -80,6 +80,12 @@
             Already have an account? <span @click="goToLogin">Login</span>
           </div>
 
+          <div class="general-error-container">
+            <p v-if="errors.general" class="error-text general-error">
+              {{ errors.general }}
+            </p>
+          </div>
+
           <div class="success-wrapper">
             <div v-if="successMessage" class="success-notification">
               <img src="@/assets/icons/check-green.svg" alt="Success Icon" />
@@ -168,10 +174,27 @@ async function handleSubmit(e: Event) {
     }, 5000)
   } catch (err: any) {
     if (err.response?.status === 400 && err.response.data) {
-      errors.value = err.response.data
+      const data = err.response.data
+      if (typeof data === 'object' && data.error) {
+        errors.value.general = data.error
+      } else {
+        errors.value = data
+      }
     } else {
-      errors.value.email = 'Registration failed. Please try again.'
+      errors.value.general = 'Something went wrong. Please try again.'
     }
+
+    setTimeout(() => {
+      errors.value.general = 'Registration failed'
+      email.value = ''
+      fullName.value = ''
+      password.value = ''
+      confirmPassword.value = ''
+    }, 3000)
+
+    setTimeout(() => {
+      errors.value.general = ''
+    }, 5000)
   }
 }
 
@@ -299,6 +322,20 @@ onUnmounted(() => {
     flex-direction: column;
     width: 100%;
     gap: 9px;
+
+    .general-error-container {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .general-error {
+      color: #d32f2f;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 500;
+      width: 100%;
+    }
 
     .success-wrapper {
       height: 44px;
@@ -496,5 +533,4 @@ onUnmounted(() => {
     }
   }
 }
-
 </style>
