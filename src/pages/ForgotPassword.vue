@@ -52,6 +52,7 @@ const { forgotPassword } = useAuth()
 const isMobile = ref(window.innerWidth <= 768)
 const successMessage = ref('')
 const email = ref('')
+const affiliate = ref(true)
 
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768
@@ -59,7 +60,7 @@ function checkMobile() {
 
 async function handleSubmit() {
   try {
-    await forgotPassword(email.value)
+    await forgotPassword(email.value, affiliate.value)
     successMessage.value = 'Reset link sent, please check your inbox.'
 
     setTimeout(() => {

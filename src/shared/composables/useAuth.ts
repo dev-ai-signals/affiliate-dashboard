@@ -31,8 +31,8 @@ export function useAuth() {
     await api.post('/auth/register/affiliate', payload)
   }
 
-  async function forgotPassword(email: string) {
-    await api.post('/auth/forgot-password', { email })
+  async function forgotPassword(email: string, affiliate: boolean) {
+    await api.post('/auth/forgot-password', { email, affiliate })
   }
 
   async function resetPassword(token: string, newPassword: string) {
