@@ -10,7 +10,7 @@
       <div class="dashboard__cards">
         <div class="card-one">
           <h2>${{ totalEarned.toFixed(2) }}</h2>
-          <span>Total Sales</span>
+          <span>Total Earned</span>
         </div>
 
         <div class="card-two">
@@ -255,6 +255,7 @@ async function handleSubmitWallet() {
     await submitWallet(walletAddress.value)
     successMessage.value = 'Wallet Submitted'
     errorMessage.value = ''
+    walletAddress.value = ''
     setTimeout(() => successMessage.value = '', 3000)
   } catch (err) {
     errorMessage.value = 'Failed to submit wallet'
