@@ -9,7 +9,7 @@
     <div class="dashboard__container">
       <div class="dashboard__cards">
         <div class="card-one">
-          <h2>${{ totalEarned.toFixed(2) }}</h2>
+          <h2>${{ totalEarned.toFixed(3) }}</h2>
           <span>Total Earned</span>
         </div>
 

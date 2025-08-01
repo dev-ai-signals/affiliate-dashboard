@@ -11,7 +11,7 @@ export function useAffiliate() {
 
   async function fetchDashboard() {
     const { data } = await api.get('/affiliate/dashboard')
-    totalEarned.value = data.totalEarned
+    totalEarned.value = data.totalEarned / 1_000_000
     signedUp.value = data.signedUp
     affiliateLink.value = data.inviteAffiliateLink ?? ''
     tier2Link.value = data.productLink ?? ''
