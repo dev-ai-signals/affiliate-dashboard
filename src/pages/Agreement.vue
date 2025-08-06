@@ -9,7 +9,7 @@
     <div class="agreement__content">
       <p class="first-paragraph">Please read these terms and conditions carefully before using Our Service.</p>
 
-      <h3>Effective Date: [Insert Date]</h3>
+      <h3>Effective Date: {{ today }}</h3>
       <p><strong>This Agreement</strong> is entered into by and between <strong>AI Signals</strong>, (hereinafter referred to as the “Company”), and the undersigned individual (hereinafter referred to as the “Affiliate”).</p>
 
       <span class="break-line"></span>
@@ -22,23 +22,25 @@
       <h3>2. Commission Structure</h3>
 
       <h3>2.1 Tier 1 – Direct Sales Commission</h3>
-      <p class="dif-margin-p">The Affiliate shall earn a <strong>66% commission</strong> on all monthly subscription sales made directly through the Affiliate’s unique referral link.</p>
+      <p>•	Regular Affiliates earn a 60% recurring commission on all subscription sales made via their unique referral link.</p>
+      <p>o	This 60% applies for the first 6 months of each referred subscriber's active membership.</p>
+      <p>o	After this period, commissions from that customer end unless the affiliate upgrades to Affiliate Plus.</p>
+      <p>•	Affiliate Plus members earn a 70% recurring commission for life on all direct sales they generate.</p>
+      <p class="dif-margin-p">o	Affiliate Plus status is available to affiliates who subscribe to the AIS platform at the time of promotion.</p>
 
-      <h3>2.2 Tier 2 – Override Commission (Sub-Affiliate Sales)</h3>
-      <p class="list-text-top">If the Affiliate refers another person (a "Sub-Affiliate") to the Program, and that Sub-Affiliate makes subscription sales:</p>
-
-      <ul>
-        <li>The Affiliate shall earn an additional <strong>11% override commission</strong> on all direct sales made by the Sub-Affiliate, provided that:</li>
-        <li>The Affiliate generates <strong>no less than $5,000 in personal Tier 1 subscription sales</strong> during the same calendar month in which the override is claimed.</li>
-      </ul>
-      <p class="list-text-bottom">If the $5,000 threshold is not met in a given month, the 11% override will not be paid for that period.</p>
-
+      <h3>2.2 Tier 2 – Tier 2 – Sub-Affiliate Override Commission</h3>
+      <p>•	Affiliates Plus who refer other affiliates (sub-affiliates) earn an 11% override commission on all direct Tier 1 sales made by their sub-affiliates.</p>
+      <p class="list-text-top">•	There are no performance minimums required to qualify for Tier 2 commissions.</p>
       <span class="break-line-three"></span>
+
       <h3>3. Payment Terms</h3>
+      <p class="dif-margin-p">•	Crypto payments: Commissions are paid instantly in USDC (ERC-20) once the referred user’s transaction is confirmed.</p>
+      <p class="highlighted">Minimum Sales Requirement:</p>
       <ul>
-        <li>Commissions shall be paid <strong>monthly</strong>, within <strong>10 business days</strong> following the end of each calendar month.</li>
-        <li>All payments will be made in [USDT, USDC], to the account or wallet address provided by the Affiliate.</li>
-        <li>The Affiliate is solely responsible for reporting and paying any applicable income taxes or transaction fees.</li>
+        <li>Affiliates must refer a minimum of 2 unique, paying customers before any commissions are released. This applies to both Tier 1 earnings.</li>
+        <li>Credit card payments: Subject to a 90-day clearance period before commissions are released.</li>
+        <li>Each affiliate must submit one valid ERC-20 wallet address for payment.</li>
+        <li>Affiliates are solely responsible for tax reporting and ensuring wallet accuracy.</li>
       </ul>
 
       <span class="break-line-two"></span>
@@ -189,6 +191,12 @@ async function handleAccept() {
   }
 }
 
+const today = new Date().toLocaleDateString(undefined, {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+})
+
 onMounted(() => {
   window.addEventListener('resize', checkMobile)
 })
@@ -270,6 +278,14 @@ onUnmounted(() => {
       font-size: 14px;
       line-height: 22px;
       color: rgba(93, 90, 90, 1);
+    }
+
+    .highlighted {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 22px;
+      color: rgba(93, 90, 90, 1);
+      margin: 0;
     }
 
     .break-line {
